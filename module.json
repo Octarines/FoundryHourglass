@@ -1,0 +1,12 @@
+{
+  "name": "hourglass",
+  "title": "Hourglass - A visual timer for FVTT",
+  "description": "A timer that can be displayed either in chat and on screen.",
+  "author": "Octarine",
+  "version": "0.0.1",
+  "minimumCoreVersion": "0.8.9",
+  "compatibleCoreVersion": "0.8.9",
+  "esmodules": ["scripts/main.js"],
+  "socket": true,
+  "styles": ["styles/hourglass.css", "styles/hourglass-gui.css"]
+}

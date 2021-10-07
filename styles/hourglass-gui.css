@@ -1,0 +1,42 @@
+.hourglass-gui {
+    height: auto;
+    width: 30em;
+    /* margin: 0;
+    box-shadow: none; */
+}
+
+.hourglass-gui .hourglass-gui__form {
+    height: 100%;
+    width: 100%;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__item {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__item__input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__subtitle {
+    margin-left: 1.5em;
+}
+
+.hourglass-gui .hourglass-gui__form .colour-picker {
+    height: 100%;
+    width: 100%;
+}
+
+::placeholder {
+    font-style: italic;
+  }

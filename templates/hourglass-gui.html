@@ -1,0 +1,74 @@
+<form class="hourglass-gui__form">
+    <!-- <div class="form-group">
+      <label for="timerType">Type</label>
+      <select id="timerType" name="timerType">
+        <option value="hourglass-sand" selected>Hourglass</option>
+      </select>
+    </div> -->
+
+    <div class="hourglass-gui__form__item">
+      <label for="title">Title</label>
+      <input  type="text" 
+              name="title" 
+              value="{{title}}" 
+              maxlength="50">
+    </div>
+
+    <div class="hourglass-gui__form__title">Duration</div>      
+    <div  class="hourglass-gui__form__item">
+        <label  class="hourglass-gui__form__subtitle" for="durationSeconds">
+          Seconds
+        </label>
+        <input  type="number" 
+                name="durationSeconds" 
+                value="{{durationSeconds}}">
+    </div>
+    <div  class="hourglass-gui__form__item">
+      <label  class="hourglass-gui__form__subtitle" for="durationMinutes">
+        Minutes</label>
+      <input  type="number" 
+              name="durationMinutes" 
+              value="{{durationMinutes}}">
+    </div>
+
+    <div class="hourglass-gui__form__item">
+      <label for="sandColour">Sand Colour</label>
+      <div class="hourglass-gui__form__item__input">
+        <input  type="text" 
+                name="sandColour" 
+                value="{{sandColour}}"
+                id="hourglassColourText">
+        <input  type="color"
+                value="{{sandColour}}"
+                id="hourglassColour"
+                class="colour-picker">
+      </div>
+    </div>
+  
+    <div class="hourglass-gui__form__item">
+      <label for="timeAsText">Display time as text?</label>
+      <input type="checkbox" name="timeAsText" checked>
+    </div>
+
+    <!-- <div class="form-group">
+      <label for="closeOnEnd">Close after duration?</label>
+      <input type="checkbox" name="closeOnEnd">
+    </div> -->
+  
+    <div class="hourglass-gui__form__item">
+      <label for="endMessage">End message</label>
+      <input  type="text" 
+              name="endMessage" 
+              value="{{endMessage}}"
+              placeholder="Text displayed after duration"
+              maxlength="150">
+    </div>
+  
+    <footer class="sheet-footer flexrow"
+            style="margin-top: 1em">
+      <button type="submit" 
+              name="submit">
+        <i class="fa fa-hourglass"></i> Start Hourglass
+      </button>
+    </footer>
+</form>
