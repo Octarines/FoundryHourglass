@@ -2,9 +2,12 @@
     <div class="top"></div>
     <div class="bottom">
         <div class="drip"></div>
-        <!-- <div class="blob"></div> -->
     </div>
     <div class="hourglass-body">
         <div id="{{remainingTimeId}}">{{duration}}</div>
     </div>
+    <svg height="0" width="0">
+        <clipPath id="hourglassTopMask" clipPathUnits="objectBoundingBox"><path d="M0.497,1 c-0.006,-0.038,-0.075,-0.081,-0.158,-0.148 c-0.088,-0.075,-0.209,-0.19,-0.279,-0.278 c-0.064,-0.088,-0.061,-0.222,-0.061,-0.222 v-0.334 c0.123,-0.028,0.938,-0.02,1,0.004 c0,0.049,-0.002,0.217,0,0.338 s-0.021,0.153,-0.073,0.227 s-0.194,0.202,-0.273,0.265 C0.584,0.908,0.502,0.96,0.497,1"></path></clipPath>
+        <clipPath id="hourglassBottomMask" clipPathUnits="objectBoundingBox"><path d="M0.495,0 c0.004,0.041,0.087,0.094,0.159,0.151 c0.079,0.063,0.221,0.191,0.275,0.267 c0.049,0.071,0.072,0.103,0.071,0.223 s0,0.288,0,0.337 c-0.062,0.025,-0.88,0.032,-1,0.004 V0.65 s-0.007,-0.134,0.061,-0.219 c0.067,-0.09,0.189,-0.205,0.279,-0.28 C0.416,0.084,0.489,0.036,0.495,0"></path></clipPath>
+    </svg>
 </div>
