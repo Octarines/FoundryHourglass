@@ -1,12 +1,15 @@
 {
   "name": "hourglass",
-  "title": "Hourglass - A visual timer for FVTT",
-  "description": "A timer that can be displayed either in chat and on screen.",
+  "title": "Hourglass",
+  "description": "A configurable animated graphical timer (hourglass) that can be shown by the GM to all players.",
   "author": "Octarine",
-  "version": "0.0.1",
-  "minimumCoreVersion": "0.8.9",
+  "version": "1.0.0",
+  "minimumCoreVersion": "0.8.0",
   "compatibleCoreVersion": "0.8.9",
   "esmodules": ["scripts/main.js"],
   "socket": true,
-  "styles": ["styles/hourglass.css", "styles/hourglass-gui.css"]
+  "styles": ["styles/hourglass.css", "styles/hourglass-gui.css"],
+  "url": "https://github.com/Octarines/FoundryHourglass",
+  "manifest": "https://raw.githubusercontent.com/Octarines/FoundryHourglass/main/module.json",
+  "download": "https://github.com/Octarines/FoundryHourglass/archive/v1.0.0.zip"
 }

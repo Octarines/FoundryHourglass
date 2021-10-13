@@ -97,8 +97,8 @@
   transform: translateX(-50%);
   left: 50%;
   width: 100%;
-  height: 80%;
-  bottom: -33%;
+  height: 90%;
+  bottom: -47%;
   background: var(--sand-color);
   animation: var(--sand-duration) raiseBottomSand linear;
   animation-fill-mode: forwards;
@@ -106,13 +106,11 @@
 
 @keyframes raiseBottomSand {
   0% {
-    transform: translate(-50%, 48%);
-    /* border-radius: 50% 50% 0 0; */
+    transform: translate(-50%, 47%);
   }
   
   100% {
-    transform: translate(-50%, -33%);    
-    /* boder-radius: 0; */
+    transform: translate(-50%, -33%);
   }
 }
 
