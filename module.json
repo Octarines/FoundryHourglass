@@ -3,13 +3,13 @@
   "title": "Hourglass",
   "description": "A configurable animated graphical timer (hourglass) that can be shown by the GM to all players.",
   "author": "Octarine",
-  "version": "1.0.0",
+  "version": "This is auto replaced",
   "minimumCoreVersion": "0.8.0",
   "compatibleCoreVersion": "0.8.9",
   "esmodules": ["scripts/main.js"],
   "socket": true,
   "styles": ["styles/hourglass.css", "styles/hourglass-gui.css"],
-  "url": "https://github.com/Octarines/FoundryHourglass",
-  "manifest": "https://raw.githubusercontent.com/Octarines/FoundryHourglass/main/module.json",
-  "download": "https://github.com/Octarines/FoundryHourglass/archive/v1.0.0.zip"
+  "url": "This is auto replaced",
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced"
 }
