@@ -37,6 +37,41 @@
     width: 100%;
 }
 
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 1.8em;
+    grid-gap: 0.3em;
+}
+
+.hourglass-gui__form__button {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px groove #f0f0e0;
+    box-sizing: border-box;
+}
+
+.hourglass-gui__form__button:hover {
+    box-shadow: 0 0 5px red;
+}
+
+.hourglass-gui__form__button__disabled {
+    pointer-events:none;
+    cursor: none;
+    opacity: 0.5;
+}
+
+.hourglass-gui__form__divider {
+    border-bottom: 3px groove #f0f0e0;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
 ::placeholder {
     font-style: italic;
   }

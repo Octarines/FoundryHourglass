@@ -9,7 +9,7 @@
   "esmodules": ["scripts/main.js"],
   "socket": true,
   "styles": ["styles/hourglass.css", "styles/hourglass-gui.css"],
-  "url": "This is auto replaced",
-  "manifest": "This is auto replaced",
+  "url": "https://github.com/Octarines/FoundryHourglass",
+  "manifest": "https://github.com/Octarines/FoundryHourglass/releases/latest/download/module.json",
   "download": "This is auto replaced"
 }

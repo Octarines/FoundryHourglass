@@ -21,7 +21,6 @@ export class Hourglass extends Application {
         this._title = options.title;
         this._timeAsText = options.timeAsText;
         this._sandColour = options.sandColour;
-        this._closeOnEnd = options.closeOnEnd;
         this._endMessage = options.endMessage;
 
         this._duration = options.durationSeconds + (options.durationMinutes * 60);
@@ -37,6 +36,7 @@ export class Hourglass extends Application {
     }
 
     activateListeners(html) {
+        super.activateListeners(html);
         this.startTimer();
     }
 
@@ -54,9 +54,9 @@ export class Hourglass extends Application {
         const timerInterval = setInterval(() => {
             this._elapsedTime++;
 
-            let expired = this._duration <= this._elapsedTime;
+            const expired = this._duration <= this._elapsedTime;
 
-            let remainingTimeElement = document.getElementById(this._remainingTimeId);
+            const remainingTimeElement = document.getElementById(this._remainingTimeId);
 
             if(this._timeAsText) {
                 const remainingTime = this._duration - this._elapsedTime;
@@ -65,7 +65,7 @@ export class Hourglass extends Application {
 
                 // Check the window is still open
                 if(!!remainingTimeElement){
-                    remainingTimeElement.innerText = !expired ? displayTime : this._endMessage;
+                    remainingTimeElement.innerText = displayTime;
                 } else {
                     clearInterval(timerInterval);
                 }
@@ -74,9 +74,9 @@ export class Hourglass extends Application {
             if(expired) {
                 clearInterval(timerInterval);
 
-                // if(this._closeOnEnd) {
-                //     this.close();
-                // }
+                if(this._endMessage && !!remainingTimeElement) {
+                    remainingTimeElement.innerText = this._endMessage;
+                }
             }
         }, 1000);
     }

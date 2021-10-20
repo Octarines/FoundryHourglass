@@ -36,8 +36,20 @@ Once an hourglass has been created, the module will retain the "last used" setti
 
 Multiple hourglasses can be opened by a GM at one time, should you wish to track multiple events simultaneously.
 
+## Presets
+
+Game Masters now have the ability to save Hourglass Options as _Presets_. This will allow frequently used configurations to be quickly recalled and displayed.
+
+![Hourglass Window][5]
+
++ **Select Preset** - Presents a dropdown list of all previously saved Hourglasses. A GM can select a preset from this list to populate all options fields with data saved for that preset.
++ **Save New** - Will persist all currently entered options as a new Preset with a name matching the Title field.
++ **Update Selected** - Will update an existing selected Preset with currently entered options. If the title field has been changed, the name of the preset will also be updated. If no _Preset is selected from the dropdown, this button will be disabled_.
++ **Delete Selected** - Will delete an existing selected preset. _If no Preset is selected from the dropdown, this button will be disabled_.
+
 
 [1]: demo/hourglass-default.PNG
 [2]: demo/hourglass-options.PNG
 [3]: demo/hourglass-custom.PNG
 [4]: demo/hourglass-custom-endmessage.PNG
+[5]: demo/hourglass-options-presets.PNG

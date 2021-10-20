@@ -1,45 +1,74 @@
 <form class="hourglass-gui__form">
-    <!-- <div class="form-group">
-      <label for="timerType">Type</label>
-      <select id="timerType" name="timerType">
-        <option value="hourglass-sand" selected>Hourglass</option>
+    <div class="hourglass-gui__form__item">
+      <label for="presets">Presets</label>
+      <select name="presets" 
+              id="hourglassPresets">
+        <option value="" 
+                selected="selected">Select preset
+        </option>
       </select>
-    </div> -->
+    </div>
+
+    <div class="hourglass-gui__form__buttons">
+      <div  class="hourglass-gui__form__button"
+            name="savePreset"
+            id="hourglassNewPreset">
+        <i class="fa fa-plus-square" style="color:darkgreen; margin-right: 0.5em"></i> 
+        Save New
+      </div>
+      <div  class="hourglass-gui__form__button"
+            name="updatePreset"
+            id="hourglassUpdatePreset">
+        <i class="fa fa-save" style="margin-right: 0.5em"></i> 
+        Update Selected
+      </div>
+      <div  class="hourglass-gui__form__button"
+            name="deletePreset"
+            id="hourglassDeletePreset">
+        <i class="fa fa-trash" style="color:darkred; margin-right: 0.5em"></i> 
+        Delete Selected
+      </div>
+    </div>
+
+    <div class="hourglass-gui__form__divider"></div>
 
     <div class="hourglass-gui__form__item">
       <label for="title">Title</label>
       <input  type="text" 
-              name="title" 
-              value="{{title}}" 
-              maxlength="50">
+              name="title"
+              id="hourglassTitle"
+              value="{{defaultOptions.title}}" 
+              maxlength="40">
     </div>
 
-    <div class="hourglass-gui__form__title">Duration</div>      
+    <div class="hourglass-gui__form__title">Duration</div>
     <div  class="hourglass-gui__form__item">
         <label  class="hourglass-gui__form__subtitle" for="durationSeconds">
           Seconds
         </label>
         <input  type="number" 
-                name="durationSeconds" 
-                value="{{durationSeconds}}">
+                name="durationSeconds"
+                id="hourglassDurationSeconds"
+                value="{{defaultOptions.durationSeconds}}">
     </div>
     <div  class="hourglass-gui__form__item">
       <label  class="hourglass-gui__form__subtitle" for="durationMinutes">
         Minutes</label>
       <input  type="number" 
-              name="durationMinutes" 
-              value="{{durationMinutes}}">
+              name="durationMinutes"
+              id="hourglassDurationMinutes"
+              value="{{defaultOptions.durationMinutes}}">
     </div>
 
     <div class="hourglass-gui__form__item">
       <label for="sandColour">Sand Colour</label>
       <div class="hourglass-gui__form__item__input">
         <input  type="text" 
-                name="sandColour" 
-                value="{{sandColour}}"
+                name="sandColour"
+                value="{{defaultOptions.sandColour}}"
                 id="hourglassColourText">
         <input  type="color"
-                value="{{sandColour}}"
+                value="{{defaultOptions.sandColour}}"
                 id="hourglassColour"
                 class="colour-picker">
       </div>
@@ -47,19 +76,18 @@
   
     <div class="hourglass-gui__form__item">
       <label for="timeAsText">Display time as text?</label>
-      <input type="checkbox" name="timeAsText" checked>
+      <input  type="checkbox" 
+              name="timeAsText"
+              id="hourglassTimeAsText"
+              checked=false>
     </div>
-
-    <!-- <div class="form-group">
-      <label for="closeOnEnd">Close after duration?</label>
-      <input type="checkbox" name="closeOnEnd">
-    </div> -->
   
     <div class="hourglass-gui__form__item">
       <label for="endMessage">End message</label>
       <input  type="text" 
-              name="endMessage" 
-              value="{{endMessage}}"
+              name="endMessage"
+              id="hourglassEndMessage"
+              value="{{defaultOptions.endMessage}}"
               placeholder="Text displayed after duration"
               maxlength="150">
     </div>
