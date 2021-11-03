@@ -6,9 +6,10 @@
 ![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fhourglass&colorB=4aa94a)
 ![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FOctarines%2FFoundryHourglass%2Fmain%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange)
 
-A configurable animated graphical timer (hourglass) for foundry VTT that can be shown by the GM to all players.
+Configurable animated graphical timers for foundry VTT that can be shown by the GM to all players.
 
 ![Hourglass Window][1]
+![Hourglass Window][6]
 
 ## Hourglass Options
 
@@ -16,6 +17,7 @@ To create a new hourglass, a Game Master may select the hourglass icon under the
 
 ![Hourglass Window][2]
 
++ **Timer Type** - The type of animated graphic to show to players. Options currently include "Hourglass" & "Flipdown Clock".
 + **Title** - The display name of the hourglass that will appear at the top left.
 + **Duration (Seconds/Minutes)** - The time taken for the hourglass to complete.
 + **Sand Colour** - The hex value for the colour of the sand in the hourglass. Can be typed manually or selected using the colour picker.
@@ -55,3 +57,4 @@ Game Masters now have the ability to save Hourglass Options as _Presets_. This w
 [3]: demo/hourglass-custom.PNG
 [4]: demo/hourglass-custom-endmessage.PNG
 [5]: demo/hourglass-options-presets.PNG
+[6]: demo/flipdown.PNG

@@ -1,5 +1,6 @@
 import { addHourglassControl } from './controls.js'
 import { Hourglass } from "./hourglass.js";
+import { FlipDown } from "./flipdown.js";
 
 Hooks.on("init", async () => {
   addHourglassControl(controls);
@@ -23,5 +24,11 @@ Hooks.once("ready", () => {
 });
 
 Hooks.on("showHourglass", async (options) => {
-  const hourglass = new Hourglass(options).render(true);
+  switch(options.timerType) {
+    case 'flipdown':
+      const flipdown = new FlipDown(options).render(true);
+      break;
+    default:
+      const hourglass = new Hourglass(options).render(true);
+  }
 })

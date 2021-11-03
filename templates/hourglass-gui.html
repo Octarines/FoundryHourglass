@@ -33,6 +33,14 @@
     <div class="hourglass-gui__form__divider"></div>
 
     <div class="hourglass-gui__form__item">
+      <label for="timerType">Timer Type</label>
+      <select id="timerType" name="timerType">
+        <option value="hourglass" selected>Hourglass</option>
+        <option value="flipdown" selected>Flipdown Clock</option>
+      </select>
+    </div>
+
+    <div class="hourglass-gui__form__item">
       <label for="title">Title</label>
       <input  type="text" 
               name="title"
@@ -60,7 +68,7 @@
               value="{{defaultOptions.durationMinutes}}">
     </div>
 
-    <div class="hourglass-gui__form__item">
+    <div class="hourglass-gui__form__item" id="hourglassColourContainer">
       <label for="sandColour">Sand Colour</label>
       <div class="hourglass-gui__form__item__input">
         <input  type="text" 
@@ -74,7 +82,7 @@
       </div>
     </div>
   
-    <div class="hourglass-gui__form__item">
+    <div class="hourglass-gui__form__item" id="hourglassTimeAsTextContainer">
       <label for="timeAsText">Display time as text?</label>
       <input  type="checkbox" 
               name="timeAsText"

@@ -1,4 +1,4 @@
-import { uuidv4 } from "./tools.js";
+import { uuidv4, setSelectedValue, hideFormElements } from "./tools.js";
 
 export class HourglassGui extends FormApplication {
   constructor() {
@@ -15,6 +15,7 @@ export class HourglassGui extends FormApplication {
 
   static hourGlassDefaultOptions = {
     id: "7689a471-bc02-4151-8ce9-68ff30737e8c",
+    timerType: "hourglass",
     durationSeconds: 30,
     durationMinutes: 0,
     sandColour: "#EDD0AA",
@@ -47,21 +48,31 @@ export class HourglassGui extends FormApplication {
     
     this.initialiseColourPicker();
 
-    // slight hack for checkbox initial value binding
+    this.initialiseTypes();
+
+    // slight hack for checkbox and select dropdown initial value binding
     document.getElementById("hourglassTimeAsText").checked = HourglassGui.hourGlassDefaultOptions.timeAsText;
+
+    document.getElementById('hourglass-gui-application').style.height = "auto";
   }
 
   _updateObject = async (_, formData) => {
     if (formData.durationSeconds <= 0 && formData.durationMinutes <= 0)
       return ui.notifications.warn("Please insert a duration greater than 0!");
 
+    const totalTime = formData.durationSeconds + (formData.durationMinutes * 60);
+
+    if(totalTime >= 360000)
+      return ui.notifications.warn("Total entered time cannot be higher than 100 hours!");
+
     const { 
-      durationSeconds, 
-      durationMinutes, 
-      title, 
+      durationSeconds,
+      durationMinutes,
+      title,
       timeAsText,
       sandColour,
-      endMessage } = formData;
+      endMessage,
+      timerType } = formData;
 
     const hourglassOptions = {
       durationSeconds: durationSeconds,
@@ -69,7 +80,8 @@ export class HourglassGui extends FormApplication {
       title: title,
       timeAsText: timeAsText,
       sandColour: sandColour,
-      endMessage: endMessage
+      endMessage: endMessage,
+      timerType: timerType
     };
 
     HourglassGui.hourGlassDefaultOptions = hourglassOptions;
@@ -87,6 +99,15 @@ export class HourglassGui extends FormApplication {
     document.getElementById('hourglassColourText').addEventListener('input', function() {
       hourglassColour.value = this.value;
     });
+  }
+
+  initialiseTypes() {
+    const typeSelect = document.getElementById("timerType");
+    typeSelect.onchange = () => this.refreshTypeOptions();
+
+    setSelectedValue("timerType", HourglassGui.hourGlassDefaultOptions.timerType);
+
+    this.refreshTypeOptions()
   }
 
   initialisePresets() {
@@ -118,9 +139,11 @@ export class HourglassGui extends FormApplication {
       document.getElementById("hourglassColour").value = selectedOptions.sandColour;
       document.getElementById("hourglassTimeAsText").checked = selectedOptions.timeAsText;
       document.getElementById("hourglassEndMessage").value = selectedOptions.endMessage;
+      setSelectedValue("timerType", selectedOptions.timerType);
     }
 
     this.refreshPresetButtons();
+    this.refreshTypeOptions();
   }
 
   updatePreset() {
@@ -136,6 +159,7 @@ export class HourglassGui extends FormApplication {
   savePreset(presetId) {
     const hourglassOptions = { 
       id: presetId,
+      timerType: document.getElementById("timerType").value,
       title: document.getElementById("hourglassTitle").value,
       durationSeconds: document.getElementById("hourglassDurationSeconds").value,
       durationMinutes: document.getElementById("hourglassDurationMinutes").value,
@@ -150,13 +174,7 @@ export class HourglassGui extends FormApplication {
 
     this.populatePresetOptions();
 
-    const presetsList = document.getElementById("hourglassPresets");
-
-    for (var i = 0; i < presetsList.options.length; ++i) {
-      if (presetsList.options[i].value === hourglassOptions.id) {
-        presetsList.options[i].selected = true;
-      }
-    }
+    setSelectedValue("hourglassPresets", hourglassOptions.id);
 
     this.refreshPresetButtons();
   }
@@ -201,6 +219,16 @@ export class HourglassGui extends FormApplication {
     } else {
       document.getElementById("hourglassUpdatePreset").classList.remove("hourglass-gui__form__button__disabled");
       document.getElementById("hourglassDeletePreset").classList.remove("hourglass-gui__form__button__disabled");
+    }
+  }
+
+  refreshTypeOptions() {
+    const typeSelect = document.getElementById("timerType");
+
+    if(typeSelect.value === "flipdown") {
+      hideFormElements(true, ["hourglassColourContainer", "hourglassTimeAsTextContainer"]);
+    } else {
+      hideFormElements(false, ["hourglassColourContainer", "hourglassTimeAsTextContainer"]);
     }
   }
 }

@@ -74,7 +74,7 @@ export class Hourglass extends Application {
             if(expired) {
                 clearInterval(timerInterval);
 
-                if(this._endMessage && !!remainingTimeElement) {
+                if(!!this._endMessage && !!remainingTimeElement) {
                     remainingTimeElement.innerText = this._endMessage;
                 }
             }

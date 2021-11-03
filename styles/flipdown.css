@@ -1,0 +1,206 @@
+:root {
+  --rotor-width: 1em;
+  --rotor-height: 1.5em;
+  --rotor-colour: #151515;
+  --rotor-text-colour: #FFFFFF;
+}
+
+.flipdownbody {
+    height: 300px;
+    width: 640px;
+    margin: 0;
+    box-shadow: none;
+}
+
+.flipdownbody .window-content {
+    background: none;
+    overflow: hidden;
+}
+
+.flipdownbody .window-header {
+    border: none;
+}
+
+.flipdownbody .flipdown-canvas{
+    position: relative;
+    margin: auto;
+    display: block;
+    width: 100%;
+    height:100%;
+}
+
+.flipdown-canvas__textoverlay {
+  position: absolute;
+  display: grid;
+  width: 100%;
+  bottom: 0;
+
+  justify-content: center;
+  color: white;
+  font-size: 2em;
+
+  text-shadow:
+   -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+}
+
+/* Common styling */
+/* Rotor group headings */
+.flipdown .rotor-group-heading:before {
+  color: #FFFFFF;
+}
+/* Rotor tops */
+.flipdown .rotor,
+.flipdown .rotor-top,
+.flipdown .rotor-leaf-front {
+  color: var(--rotor-text-colour);
+  background-color: var(--rotor-colour);
+}
+/* Rotor bottoms */
+.flipdown .rotor-bottom,
+.flipdown .rotor-leaf-rear {
+  color: var(--rotor-text-colour);
+  background-color: #202020;
+}
+/* Hinge */
+.flipdown .rotor:after {
+  border-top: solid 1px var(--rotor-colour);
+}
+
+.flipdown {
+  overflow: visible;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  align-content: center;
+  justify-content: center;
+  grid-auto-flow: column;
+
+  font-family: sans-serif;
+  font-weight: bold;
+
+  background-image: url(../images/Flipdown.png);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.flipdown .rotor-group {
+  position: relative;
+  float: left;
+  padding-right: 30px;
+}
+
+.flipdown .rotor-group:last-child {
+  padding-right: 0;
+}
+
+.flipdown .rotor-group-heading:before {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.flipdown .rotor-group:nth-child(1) .rotor-group-heading:before {
+  content: attr(data-before);
+}
+
+.flipdown .rotor-group:nth-child(2) .rotor-group-heading:before {
+  content: attr(data-before);
+}
+
+.flipdown .rotor-group:nth-child(3) .rotor-group-heading:before {
+  content: attr(data-before);
+}
+
+.flipdown .rotor-group:nth-child(4) .rotor-group-heading:before {
+  content: attr(data-before);
+}
+
+.flipdown .rotor {
+  position: relative;
+  float: left;
+  width: var(--rotor-width);
+  height: var(--rotor-height);
+  margin: 0px 5px 0px 0px;
+  border-radius: 4px;
+  font-size: 4.8em;
+  text-align: center;
+  perspective: 200px;
+}
+
+.flipdown .rotor:last-child {
+  margin-right: 0;
+}
+
+.flipdown .rotor-top,
+.flipdown .rotor-bottom {
+  overflow: hidden;
+  position: absolute;
+  width: var(--rotor-width);
+  height: calc(var(--rotor-height) / 2);
+}
+
+.flipdown .rotor-leaf {
+  z-index: 1;
+  position: absolute;
+  width: var(--rotor-width);
+  height: var(--rotor-height);
+  transform-style: preserve-3d;
+  transition: transform 0s;
+}
+
+.flipdown .rotor-leaf.flipped {
+  transform: rotateX(-180deg);
+  transition: all 0.5s ease-in-out;
+}
+
+.flipdown .rotor-leaf-front,
+.flipdown .rotor-leaf-rear {
+  overflow: hidden;
+  position: absolute;
+  width: var(--rotor-width);
+  height: calc(var(--rotor-height) / 2);
+  margin: 0;
+  transform: rotateX(0deg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flipdown .rotor-leaf-front {
+  line-height: var(--rotor-height);
+  border-radius: 4px 4px 0px 0px;
+}
+
+.flipdown .rotor-leaf-rear {
+  line-height: 0px;
+  border-radius: 0px 0px 4px 4px;
+  transform: rotateX(-180deg);
+}
+
+.flipdown .rotor-top {
+  line-height: var(--rotor-height);
+  border-radius: 4px 4px 0px 0px;
+}
+
+.flipdown .rotor-bottom {
+  bottom: 0;
+  line-height: 0px;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.flipdown .rotor:after {
+  content: '';
+  z-index: 2;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: var(--rotor-width);
+  height: calc(var(--rotor-height) / 2);
+  border-radius: 0px 0px 4px 4px;
+}
