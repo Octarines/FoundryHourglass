@@ -204,3 +204,19 @@
   height: calc(var(--rotor-height) / 2);
   border-radius: 0px 0px 4px 4px;
 }
+
+.flipdown-decrement {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 3em;
+  width: 3em;
+}
+
+.flipdown-increment {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 3em;
+  width: 3em;
+}

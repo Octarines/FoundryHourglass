@@ -50,7 +50,15 @@
     </div>
 
     <div class="hourglass-gui__form__title">Duration</div>
-    <div  class="hourglass-gui__form__item">
+    <div class="hourglass-gui__form__item">
+      <label class="hourglass-gui__form__subtitle" for="durationType">Duration Type</label>
+      <select id="durationType" name="durationType">
+        <option value="timed" selected>Countdown (timed)</option>
+        <option value="manual" selected>Manual (user click)</option>
+      </select>
+    </div>
+
+    <div  class="hourglass-gui__form__item" id="hourglassDurationSecondsContainer">
         <label  class="hourglass-gui__form__subtitle" for="durationSeconds">
           Seconds
         </label>
@@ -59,13 +67,22 @@
                 id="hourglassDurationSeconds"
                 value="{{defaultOptions.durationSeconds}}">
     </div>
-    <div  class="hourglass-gui__form__item">
+    <div  class="hourglass-gui__form__item" id="hourglassDurationMinutesContainer">
       <label  class="hourglass-gui__form__subtitle" for="durationMinutes">
         Minutes</label>
       <input  type="number" 
               name="durationMinutes"
               id="hourglassDurationMinutes"
               value="{{defaultOptions.durationMinutes}}">
+    </div>
+
+    <div  class="hourglass-gui__form__item" id="hourglassDurationIncrementsContainer">
+      <label  class="hourglass-gui__form__subtitle" for="durationIncrements">
+        Increments</label>
+      <input  type="number" 
+              name="durationIncrements"
+              id="hourglassDurationIncrements"
+              value="{{defaultOptions.durationIncrements}}">
     </div>
 
     <div class="hourglass-gui__form__item" id="hourglassColourContainer">
@@ -83,7 +100,8 @@
     </div>
   
     <div class="hourglass-gui__form__item" id="hourglassTimeAsTextContainer">
-      <label for="timeAsText">Display time as text?</label>
+      <label id="hourglassTimeAsTextLabel" for="timeAsText">Display time as text?</label>
+      <label id="hourglassIncrementsAsTextLabel" for="timeAsText">Display increments as text?</label>
       <input  type="checkbox" 
               name="timeAsText"
               id="hourglassTimeAsText"

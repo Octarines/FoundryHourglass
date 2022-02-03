@@ -1,13 +1,13 @@
-
+import { hideFormElements } from "./tools.js";
 
 export class FlipDown extends Application {
 
-  constructor(options) {
-    const id = Math.floor(Math.random() * 9999);
+  static timers = [];
 
+  constructor(options) {
     super(
       {
-        id:`hourglass-${id}`,
+        id:`hourglass-${options.id}`,
         title: options.title,
         classes:['flipdownbody'],
         popOut: true,
@@ -15,14 +15,18 @@ export class FlipDown extends Application {
       }
     );
 
-    this._id = id;
+    this._id = options.id;
     this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
     this._canvasId = `hourglass-canvas-${this._id}`;
+    this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
+    this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
     
     this._title = options.title;
     this._endMessage = options.endMessage;
 
+    this._durationType = options.durationType;
     this._duration = options.durationSeconds + (options.durationMinutes * 60);
+    this._durationIncrements = options.durationIncrements;
     
     this.rotors = [];
     this.rotorLeafFront = [];
@@ -40,6 +44,8 @@ export class FlipDown extends Application {
       return {
         canvasId: `hourglass-canvas-${this._id}`,
         remainingTimeId: `hourglass-remaining-time-${this._id}`,
+        durationIncrementDecrease: this._durationIncrementDecrease,
+        durationIncrementIncrease: this._durationIncrementIncrease
       };
   }
 
@@ -48,30 +54,71 @@ export class FlipDown extends Application {
 
     this.flipdownElement = document.getElementById(this._canvasId);
 
-    this.startTimer();
+    this.initialiseTimer();
   }
 
-  startTimer() {
-
+  initialiseTimer () {
     this.createRotors();
-
-    this.updateClockValues(this._duration);
-
-    this.updateClockValues(this._duration, true);
 
     this._elapsedTime = 0;
 
-    const timerInterval = setInterval(() => {
-      this._elapsedTime++;
+    if(this._durationType !== "manual") {
+      hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
 
-      const remainingTime = this._duration - this._elapsedTime;
+      this.updateClockValues(this._duration, false);
 
-      this.updateClockValues(remainingTime);
+      this.updateClockValues(this._duration, true);
 
-      if(remainingTime <= 0) {
-        clearInterval(timerInterval);
-      }
-    }, 1000);
+      const timerInterval = setInterval(() => {
+        this._elapsedTime++;
+  
+        const remainingTime = this._duration - this._elapsedTime;
+  
+        this.updateClockValues(remainingTime, false);
+  
+        if(remainingTime <= 0) {
+          clearInterval(timerInterval);
+        }
+      }, 1000);
+    } else {
+      this.updateClockValues(this._durationIncrements);
+
+      this.updateClockValues(this._durationIncrements, true, true);
+
+      if(game.user.isGM) {
+          document.getElementById(this._durationIncrementDecrease).onclick = () => {
+              this.updateClients(-1)
+          };
+          document.getElementById(this._durationIncrementIncrease).onclick = () => {
+              this.updateClients(1)
+          };
+      } else {
+          hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
+      }          
+    }
+  }
+
+  updateIncrement (value) {
+    this._elapsedTime += value;
+    const expired = this._durationIncrements <= this._elapsedTime;
+
+    document.getElementById(this._durationIncrementIncrease).disabled = expired;
+
+    const remainingIncrements = this._durationIncrements - this._elapsedTime;
+  
+    this.updateClockValues(remainingIncrements, false, true);
+  }
+
+  updateClients (value) {
+    const incrementOptions = {
+        id: this._id,
+        increment: value,
+        timerType: 'flipdown'
+    };
+
+    game.socket.emit('module.hourglass', { type:'increment', options: incrementOptions });
+
+    Hooks.call('incrementHourglass', incrementOptions);
   }
 
   createRotors() {
@@ -119,7 +166,7 @@ export class FlipDown extends Application {
     return rotor;
   }
   
-  updateClockValues(remainingTime, init = false) {
+  updateClockValues(remainingTime, initialise, manual = false) {
 
     if (remainingTime < 3600) {
       const remainingTimeObject = new Date(remainingTime * 1000);
@@ -142,46 +189,59 @@ export class FlipDown extends Application {
       el.textContent = this.previousRotorValues[i];
     });
 
-    function rotorTopFlip() {
-      this.rotorTop.forEach((el, i) => {
-        if (el.textContent != this.rotorValues[i]) {
-          el.textContent = this.rotorValues[i];
-        }
-      });
-    }
-
-    function rotorLeafRearFlip(remainingTime) {
-      this.rotorLeafRear.forEach((el, i) => {
-        if (el.textContent != this.rotorValues[i]) {
-          el.textContent = this.rotorValues[i];
-          el.parentElement.classList.add("flipped");
-          var flip = setInterval(() => {
-            if(remainingTime > 0)
-            {
-              el.parentElement.classList.remove("flipped");
-            } else {
-              const remainingTimeElement = document.getElementById(this._remainingTimeId);
-
-              if(!!this._endMessage && !!remainingTimeElement) {
-                remainingTimeElement.innerText = this._endMessage;
-              }
-            }
-              
-            clearInterval(flip);
-          }, 500);
-        }
-      });
-    }
-
-    if (!init) {
-      setTimeout(rotorTopFlip.bind(this), 500);
-      setTimeout(rotorLeafRearFlip.bind(this, remainingTime), 500);
-    } else {
+    if (initialise || manual) {
       rotorTopFlip.call(this);
-      rotorLeafRearFlip.call(this, remainingTime);
+      rotorLeafRearFlip.call(this, remainingTime, !manual);      
+    } else {
+      setTimeout(rotorTopFlip.bind(this), 500);
+      setTimeout(rotorLeafRearFlip.bind(this, remainingTime, !manual), 500);
     }
 
     this.previousRotorValues = this.rotorValues;
+  }
+}
+
+function rotorTopFlip() {
+  this.rotorTop.forEach((el, i) => {
+    if (el.textContent != this.rotorValues[i]) {
+      el.textContent = this.rotorValues[i];
+    }
+  });
+}
+
+function rotorLeafRearFlip(remainingTime, animate) {
+  this.rotorLeafRear.forEach((el, i) => {
+    if (el.textContent != this.rotorValues[i]) {
+      el.textContent = this.rotorValues[i];
+      el.parentElement.classList.add("flipped");
+      
+      if(animate) {
+        var flip = setInterval(() => {
+          if(remainingTime > 0)
+          {
+            if(animate) {
+              el.parentElement.classList.remove("flipped");
+            }          
+          } else {
+            setEndMessage.call(this, remainingTime <= 0);
+          }
+            
+          clearInterval(flip);
+        }, 500);
+      } else {
+        setEndMessage.call(this, remainingTime <= 0);
+      }      
+    }
+  });
+}
+
+function setEndMessage(showMessage) {
+  const remainingTimeElement = document.getElementById(this._remainingTimeId);
+  
+  if(!!this._endMessage && !!remainingTimeElement && showMessage) {
+    remainingTimeElement.innerText = this._endMessage;
+  } else if (!!remainingTimeElement) {
+    remainingTimeElement.innerText = "";
   }
 }
 

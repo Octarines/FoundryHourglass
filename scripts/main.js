@@ -19,16 +19,33 @@ Hooks.on("setup", async() => {
 
 Hooks.once("ready", () => {
   game.socket.on('module.hourglass', ( options ) => {
-    Hooks.call('showHourglass', options);
+    switch(options.type) {
+      case 'show':
+        Hooks.call('showHourglass', options.options);
+        break;
+      case 'increment':
+        Hooks.call('incrementHourglass', options.options); 
+        break;
+    }
   });
 });
 
 Hooks.on("showHourglass", async (options) => {
   switch(options.timerType) {
     case 'flipdown':
-      const flipdown = new FlipDown(options).render(true);
+      FlipDown.timers.push({ id: options.id, timer: new FlipDown(options).render(true) });
       break;
     default:
-      const hourglass = new Hourglass(options).render(true);
+      Hourglass.timers.push({ id: options.id, timer: new Hourglass(options).render(true) });
+  }
+})
+
+Hooks.on("incrementHourglass", async (options) => {
+  switch(options.timerType) {
+    case 'flipdown':
+      FlipDown.timers.find(x => x.id === options.id)?.timer?.updateIncrement(options.increment);
+      break;
+    default:
+      Hourglass.timers.find(x => x.id === options.id)?.timer?.updateIncrement(options.increment);
   }
 })

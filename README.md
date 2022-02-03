@@ -6,7 +6,7 @@
 ![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fhourglass&colorB=4aa94a)
 ![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FOctarines%2FFoundryHourglass%2Fmain%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange)
 
-Configurable animated graphical timers for foundry VTT that can be shown by the GM to all players.
+Configurable animated graphical timers & round trackers for foundry VTT that can be shown by the GM to all players.
 
 ![Hourglass Window][1]
 ![Hourglass Window][6]
@@ -19,6 +19,7 @@ To create a new hourglass, a Game Master may select the hourglass icon under the
 
 + **Timer Type** - The type of animated graphic to show to players. Options currently include "Hourglass" & "Flipdown Clock".
 + **Title** - The display name of the hourglass that will appear at the top left.
++ **Duration Type** - Whether the timer should be an automatic (timed) or manual "on click" countdown.
 + **Duration (Seconds/Minutes)** - The time taken for the hourglass to complete.
 + **Sand Colour** - The hex value for the colour of the sand in the hourglass. Can be typed manually or selected using the colour picker.
 + **Display time as text?** - Indicates whether you wish to display the remaining time as a text overlay on the hourglass.
@@ -40,6 +41,13 @@ Once an hourglass has been created, the module will retain the "last used" setti
 
 Multiple hourglasses can be opened by a GM at one time, should you wish to track multiple events simultaneously.
 
+## Manual "on click" control
+Timers can now be set to "manual" control by setting the Duration type to "Manual (user click) in the hourglass options.
+
+![Hourglass Window][7]
+
+The manual timers feature a forward and backward button that, when clicked, will decrease and increase the remaining increments respectively. This could potentially be used by GMs to include manually controlled/incremented event or round tracking within their games.
+
 ## Presets
 
 Game Masters now have the ability to save Hourglass Options as _Presets_. This will allow frequently used configurations to be quickly recalled and displayed.
@@ -58,3 +66,4 @@ Game Masters now have the ability to save Hourglass Options as _Presets_. This w
 [4]: demo/hourglass-custom-endmessage.PNG
 [5]: demo/hourglass-options-presets.PNG
 [6]: demo/flipdown.PNG
+[7]: demo/hourglass-manual.PNG

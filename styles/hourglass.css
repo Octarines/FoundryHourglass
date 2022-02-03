@@ -18,6 +18,8 @@
 .hourglass .hourglass-canvas{
   --sand-color: #EDD0AA;
   --sand-duration: 0;
+  --translate-top-sand: none;
+  --translate-bottom-sand: 100%;
 
   position: relative;
   margin: auto;
@@ -46,6 +48,22 @@
   font-size: 2em;
 }
 
+.hourglass-decrement {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 3em;
+  width: 3em;
+}
+
+.hourglass-increment {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 3em;
+  width: 3em;
+}
+
 .hourglass .top {
   position: absolute;
   left: 50%;
@@ -67,6 +85,8 @@
   background: var(--sand-color);
   animation: var(--sand-duration) lowerTopSand linear;
   animation-fill-mode: forwards;
+
+  transform: translateY(var(--translate-top-sand));
 }
 
 @keyframes lowerTopSand {
@@ -94,23 +114,23 @@
 .hourglass .bottom::before {
   content: '';
   position: absolute;
-  transform: translateX(-50%);
-  left: 50%;
   width: 100%;
-  height: 90%;
-  bottom: -47%;
+  height: 72%;
+  bottom: 0;
   background: var(--sand-color);
   animation: var(--sand-duration) raiseBottomSand linear;
   animation-fill-mode: forwards;
+
+  transform: translateY(var(--translate-bottom-sand));
 }
 
 @keyframes raiseBottomSand {
   0% {
-    transform: translate(-50%, 47%);
+    transform: translateY(100%);
   }
   
   100% {
-    transform: translate(-50%, -33%);
+    transform: none;
   }
 }
 

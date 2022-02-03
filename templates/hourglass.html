@@ -1,9 +1,11 @@
 <div id="{{canvasId}}" class="hourglass-canvas">
-    <div class="top"></div>
-    <div class="bottom">
-        <div class="drip"></div>
+    <div id="{{hourglassTopId}}" class="top"></div>
+    <div id="{{hourglassBottomId}}" class="bottom">
+        <div id="{{hourglassDripId}}" class="drip"></div>
     </div>
     <div class="hourglass-body">
+        <button id="{{durationIncrementDecrease}}" class="hourglass-decrement"><</button>
+        <button id="{{durationIncrementIncrease}}" class="hourglass-increment">></button>
         <div id="{{remainingTimeId}}">{{duration}}</div>
     </div>
     <svg height="0" width="0">
