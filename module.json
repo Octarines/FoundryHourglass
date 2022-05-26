@@ -5,7 +5,7 @@
   "author": "Octarine",
   "version": "This is auto replaced",
   "minimumCoreVersion": "0.8.0",
-  "compatibleCoreVersion": "9",
+  "compatibleCoreVersion": "10",
   "esmodules": ["scripts/main.js"],
   "socket": true,
   "styles": ["styles/hourglass.css", "styles/hourglass-gui.css", "styles/flipdown.css"],

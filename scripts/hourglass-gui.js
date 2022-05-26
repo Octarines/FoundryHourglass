@@ -22,6 +22,7 @@ export class HourglassGui extends FormApplication {
     durationIncrements: 4,
     sandColour: "#EDD0AA",
     title: "Hourglass",
+    size: "large",
     timeAsText: true,
     endMessage: ""
   };
@@ -54,6 +55,8 @@ export class HourglassGui extends FormApplication {
 
     // slight hack for checkbox and select dropdown initial value binding
     document.getElementById("hourglassTimeAsText").checked = HourglassGui.hourGlassDefaultOptions.timeAsText;
+    setSelectedValue("hourglassSize", HourglassGui.hourGlassDefaultOptions.size);
+    setSelectedValue("durationType", HourglassGui.hourGlassDefaultOptions.durationType);
 
     document.getElementById('hourglass-gui-application').style.height = "auto";
   }
@@ -79,6 +82,7 @@ export class HourglassGui extends FormApplication {
       durationMinutes,
       durationIncrements,
       title,
+      size,
       timeAsText,
       sandColour,
       endMessage,
@@ -91,6 +95,7 @@ export class HourglassGui extends FormApplication {
       durationMinutes: durationMinutes,
       durationIncrements: durationIncrements,
       title: title,
+      size: size,
       timeAsText: timeAsText,
       sandColour: sandColour,
       endMessage: endMessage,
@@ -161,8 +166,9 @@ export class HourglassGui extends FormApplication {
       document.getElementById("hourglassEndMessage").value = selectedOptions.endMessage;
       setSelectedValue("timerType", selectedOptions.timerType);
 
-      //slight hack to ensure presents saved before addition of "durationType" default to the "timed" (countdown) duration type
-      setSelectedValue("durationType", selectedOptions.durationType === undefined ? "timed" : selectedOptions.durationType);      
+      //slight hack to ensure presents saved before addition of "durationType" and "hourglassSize" default to a value that matches their previous behaviour
+      setSelectedValue("durationType", selectedOptions.durationType === undefined ? "timed" : selectedOptions.durationType);
+      setSelectedValue("hourglassSize", selectedOptions.size === undefined ? "large" : selectedOptions.size);
     }
 
     this.refreshPresetButtons();
@@ -184,6 +190,7 @@ export class HourglassGui extends FormApplication {
       id: presetId,
       timerType: document.getElementById("timerType").value,
       title: document.getElementById("hourglassTitle").value,
+      size: document.getElementById("hourglassSize").value,
       durationType: document.getElementById("durationType").value,
       durationSeconds: document.getElementById("hourglassDurationSeconds").value,
       durationMinutes: document.getElementById("hourglassDurationMinutes").value,
@@ -192,6 +199,8 @@ export class HourglassGui extends FormApplication {
       timeAsText: document.getElementById("hourglassTimeAsText").checked,
       endMessage: document.getElementById("hourglassEndMessage").value
     };
+
+    console.log(hourglassOptions);
 
     this.presets.push(hourglassOptions);
 

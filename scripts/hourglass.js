@@ -2,6 +2,8 @@ import { hideFormElements } from "./tools.js";
 
 export class Hourglass extends Application {
 
+    _disable_popout_module = true;
+
     static timers = [];
 
     constructor(options) {
@@ -19,6 +21,7 @@ export class Hourglass extends Application {
         this._id = options.id;
         this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
         this._canvasId = `hourglass-canvas-${this._id}`;
+        this._windowId = `hourglass-${options.id}`;
         this._hourglassTopId = `hourglass-top-${this._id}`;
         this._hourglassBottomId = `hourglass-bottom-${this._id}`;
         this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
@@ -29,6 +32,46 @@ export class Hourglass extends Application {
         this._timeAsText = options.timeAsText;
         this._sandColour = options.sandColour;
         this._endMessage = options.endMessage;
+        this._textScale = 1;
+
+        switch(options.size) {
+            case "tiny":
+                {
+                    this._height = "170px";
+                    this._width = "100px";
+                    this._scale = 0.5;
+                    break;
+                }
+            case "small":
+                {
+                    this._height = "340px";
+                    this._width = "200px";
+                    this._scale = 0.6;
+                    break;
+                }
+            case "medium":
+                {
+                    this._height = "460px";
+                    this._width = "270px";
+                    this._scale = 0.8;
+                    break;
+                }
+            case "large":
+                {
+                    this._height = "600px";
+                    this._width = "350px";
+                    this._scale = 1;
+                    break;
+                }
+            default: 
+                {
+                    this._height = "600px";
+                    this._width = "350px";
+                    this._scale = 1;
+                    break;
+                }
+        }
+
 
         this._durationType = options.durationType;
         this._durationIncrements = options.durationIncrements;
@@ -55,9 +98,14 @@ export class Hourglass extends Application {
     }
 
     initialiseTimer () {
+        let windowElement = document.getElementById(this._windowId);
+        windowElement.style.setProperty('height', this._height);
+        windowElement.style.setProperty('width', this._width);
+
         let canvasElement = document.getElementById(this._canvasId);
         canvasElement.style.setProperty('--sand-duration', this._duration + "s");
         canvasElement.style.setProperty('--sand-color', this._sandColour);
+        canvasElement.style.setProperty('--scale', this._scale);
 
         this._elapsedTime = 0;
 

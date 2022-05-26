@@ -2,6 +2,8 @@ import { hideFormElements } from "./tools.js";
 
 export class FlipDown extends Application {
 
+  _disable_popout_module = true;
+
   static timers = [];
 
   constructor(options) {
@@ -18,6 +20,7 @@ export class FlipDown extends Application {
     this._id = options.id;
     this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
     this._canvasId = `hourglass-canvas-${this._id}`;
+    this._windowId = `hourglass-${options.id}`;
     this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
     this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
     
@@ -37,7 +40,50 @@ export class FlipDown extends Application {
     this.rotorValues = [];
     this.previousRotorValues = [];
 
-    
+    this._textScale = 1;
+
+    switch(options.size) {
+      case "tiny":
+        {
+          this._height = "100px";
+          this._width = "160px";
+          this._scale = 0.18;
+          this._messageScale = 0.5;
+          break;
+        }
+      case "small":
+        {
+          this._height = "150px";
+          this._width = "280px";
+          this._scale = 0.4;
+          this._messageScale = 0.6;
+          break;
+        }
+      case "medium":
+        {
+          this._height = "225px";
+          this._width = "480px";
+          this._scale = 0.7;
+          this._messageScale = 0.8;
+          break;
+        }
+      case "large":
+        {
+          this._height = "300px";
+          this._width = "640px";
+          this._scale = 1;
+          this._messageScale = 1;
+          break;
+        }
+      default: 
+        {
+          this._height = "300px";
+          this._width = "640px";
+          this._scale = 1;
+          this._messageScale = 1;
+          break;
+        }
+    }    
   }
   
   getData() { 
@@ -58,6 +104,12 @@ export class FlipDown extends Application {
   }
 
   initialiseTimer () {
+    let windowElement = document.getElementById(this._windowId);
+        windowElement.style.setProperty('height', this._height);
+        windowElement.style.setProperty('width', this._width);
+        windowElement.style.setProperty('--scale', this._scale);
+        windowElement.style.setProperty('--messageScale', this._messageScale);
+
     this.createRotors();
 
     this._elapsedTime = 0;

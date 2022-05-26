@@ -18,7 +18,8 @@ To create a new hourglass, a Game Master may select the hourglass icon under the
 ![Hourglass Window][2]
 
 + **Timer Type** - The type of animated graphic to show to players. Options currently include "Hourglass" & "Flipdown Clock".
-+ **Title** - The display name of the hourglass that will appear at the top left.
++ **Title** - The display name of the timer that will appear at the top left.
++ **Size** - The display size of the timer window: Tiny, Small, Medium & Large.
 + **Duration Type** - Whether the timer should be an automatic (timed) or manual "on click" countdown.
 + **Duration (Seconds/Minutes)** - The time taken for the hourglass to complete.
 + **Sand Colour** - The hex value for the colour of the sand in the hourglass. Can be typed manually or selected using the colour picker.
@@ -42,7 +43,7 @@ Once an hourglass has been created, the module will retain the "last used" setti
 Multiple hourglasses can be opened by a GM at one time, should you wish to track multiple events simultaneously.
 
 ## Manual "on click" control
-Timers can now be set to "manual" control by setting the Duration type to "Manual (user click) in the hourglass options.
+Timers can be set to "manual" control by setting the Duration type to "Manual (user click) in the hourglass options.
 
 ![Hourglass Window][7]
 
@@ -50,7 +51,7 @@ The manual timers feature a forward and backward button that, when clicked, will
 
 ## Presets
 
-Game Masters now have the ability to save Hourglass Options as _Presets_. This will allow frequently used configurations to be quickly recalled and displayed.
+Game Masters have the ability to save Hourglass Options as _Presets_. This will allow frequently used configurations to be quickly recalled and displayed.
 
 ![Hourglass Window][5]
 
@@ -59,6 +60,8 @@ Game Masters now have the ability to save Hourglass Options as _Presets_. This w
 + **Update Selected** - Will update an existing selected Preset with currently entered options. If the title field has been changed, the name of the preset will also be updated. If no _Preset is selected from the dropdown, this button will be disabled_.
 + **Delete Selected** - Will delete an existing selected preset. _If no Preset is selected from the dropdown, this button will be disabled_.
 
+## Popout!
+The Popout! module is disabled for Hourglass Timer windows due to compatibility issues.
 
 [1]: demo/hourglass-default.PNG
 [2]: demo/hourglass-options.PNG
