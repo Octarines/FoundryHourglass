@@ -4,6 +4,12 @@
         <div id="{{hourglassDripId}}" class="drip"></div>
     </div>
     <div class="hourglass-body">
+        <div class="hourglass-controls">
+            <div id="{{pauseId}}" class="hourglass-controls__control">
+                <i class="fas fa-pause" style="margin-right: 0.2em;"></i>
+                Pause
+            </div>
+        </div>
         <button id="{{durationIncrementDecrease}}" class="hourglass-decrement"><</button>
         <button id="{{durationIncrementIncrease}}" class="hourglass-increment">></button>
         <div id="{{remainingTimeId}}">{{duration}}</div>

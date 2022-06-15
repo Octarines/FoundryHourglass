@@ -17,6 +17,30 @@ export const setSelectedValue = (selectControlId, value) => {
 export const hideFormElements = (hideElements, formElementIds) => {
   formElementIds.forEach(elementId => {
     const formElement = document.getElementById(elementId);
-    formElement.style.display = hideElements ? "none" : "grid";
+
+    if(!!formElement) {
+      formElement.style.display = hideElements ? "none" : "grid";
+    }    
   });
+}
+
+export const playEndSound = (endSound, endSoundPath, global) => {
+  if(game.user.isGM) {
+    if(!!endSound && !!endSound.length) {
+                    
+      const soundPath = endSound === 'custom' ? endSoundPath : `./modules/hourglass/sounds/${endSound}.mp3`;
+      
+      AudioHelper.play({
+        src: soundPath,
+        volume: 1.0,
+        autoplay: true,
+        loop: false},
+        global)
+        .then(result => {
+          if(result.failed) {
+            ui.notifications.warn(`Valid audio file could not be found at path ${soundPath}`);
+          }
+        });
+    }
+  }
 }

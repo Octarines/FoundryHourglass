@@ -127,6 +127,43 @@
               placeholder="Text displayed after duration"
               maxlength="150">
     </div>
+
+    <div class="hourglass-gui__form__item">
+      <label for="endSound">End sound</label>
+      <div class="hourglass-gui__form__item__fileselect">
+        <select id="endSound" name="endSound">
+          <option value="" selected>None</option>
+          <option value="clock-bell" selected>Alarm Clock (Bell)</option>
+          <option value="clock-beep" selected>Alarm Clock (Beep)</option>
+          <option value="broken-glass" selected>Glass Breaking</option>
+          <option value="chime" selected>Chime</option>
+          <option value="explosion" selected>Explosion</option>
+          <option value="gong" selected>Gong</option>
+          <option value="scream" selected>Scream</option>
+          <option value="custom" selected>Select from audio file...</option>
+        </select>
+        <div  class="hourglass-gui__form__item__fileselect__button"
+              name="endSoundPreview"
+              id="endSoundPreview">
+          <i class="fas fa-play fa-fw"></i>
+        </div>
+      </div>
+    </div>
+    <div class="hourglass-gui__form__item" id="endSoundPathContainer">
+      <label for="endSoundPath"></label>
+      <div class="hourglass-gui__form__item__fileselect">
+        <input  type="text"
+                name="endSoundPath"
+                id="endSoundPath"
+                value="{{defaultOptions.endSoundPath}}"
+                placeholder="path/sound.mp3">
+        <div  class="hourglass-gui__form__item__fileselect__button"
+              name="endSoundFileSelect"
+              id="endSoundPathButton">
+          <i class="fas fa-file-import fa-fw"></i>
+        </div>
+      </div>
+    </div>
   
     <footer class="sheet-footer flexrow"
             style="margin-top: 1em">

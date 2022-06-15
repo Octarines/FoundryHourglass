@@ -1,7 +1,7 @@
 {
   "name": "hourglass",
   "title": "Hourglass",
-  "description": "A configurable animated graphical timer (hourglass) that can be shown by the GM to all players.",
+  "description": "Configurable animated graphical timers & round trackers that can be shown by the GM to all players.",
   "author": "Octarine",
   "version": "This is auto replaced",
   "minimumCoreVersion": "0.8.0",

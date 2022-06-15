@@ -13,7 +13,11 @@ Configurable animated graphical timers & round trackers for foundry VTT that can
 
 ## Hourglass Options
 
-To create a new hourglass, a Game Master may select the hourglass icon under the _Basic Controls_. This will open the options window for you to configure your hourglass.
+To create a new hourglass, a Game Master may select the hourglass icon under the _Token Controls_. 
+
+![Hourglass Window][8]
+
+This will open the options window for you to configure your hourglass.
 
 ![Hourglass Window][2]
 
@@ -25,6 +29,7 @@ To create a new hourglass, a Game Master may select the hourglass icon under the
 + **Sand Colour** - The hex value for the colour of the sand in the hourglass. Can be typed manually or selected using the colour picker.
 + **Display time as text?** - Indicates whether you wish to display the remaining time as a text overlay on the hourglass.
 + **End message** - Text to be displayed as an overlay on the hourglass after the duration has passed.
++ **End sound** - Sound to be played to all players after the duration has passed (more details below).
 
 ## Usage
 
@@ -43,11 +48,11 @@ Once an hourglass has been created, the module will retain the "last used" setti
 Multiple hourglasses can be opened by a GM at one time, should you wish to track multiple events simultaneously.
 
 ## Manual "on click" control
-Timers can be set to "manual" control by setting the Duration type to "Manual (user click) in the hourglass options.
+Timers can be set to "manual" control by setting the Duration type to "Manual (user click)" in the hourglass options.
 
 ![Hourglass Window][7]
 
-The manual timers feature a forward and backward button that, when clicked, will decrease and increase the remaining increments respectively. This could potentially be used by GMs to include manually controlled/incremented event or round tracking within their games.
+The manual timers feature a forward and backward button that, when clicked, will decrease and increase the remaining increments respectively. This could potentially be used by GMs to include manually controlled/incremented events or round tracking within their games. Both forward and back buttons are only visible to users with the GM role.
 
 ## Presets
 
@@ -60,6 +65,31 @@ Game Masters have the ability to save Hourglass Options as _Presets_. This will 
 + **Update Selected** - Will update an existing selected Preset with currently entered options. If the title field has been changed, the name of the preset will also be updated. If no _Preset is selected from the dropdown, this button will be disabled_.
 + **Delete Selected** - Will delete an existing selected preset. _If no Preset is selected from the dropdown, this button will be disabled_.
 
+## End Sound
+Games masters can choose to play a sound at the end of the timer duration by selecting it from the "End Sound" dropdown in the options window.
+
+![Hourglass Window][9]
+
+Once selected, the sound can be previewed (in the GM's client only) by pressing the "Play" button on the right of the dropdown.
+
+There are a range of pre-loaded sounds to choose from.
+The GM may alternatively choose to add their own sound from a file by selecting "Select from audio file...". Once selected, the GM can use the file picker to select a previously uploaded audio file or upload a new one.
+
+When an End Sound is selected, this sound will play in all clients where the timer window appears once the timer duration has elapsed. 
+
+## Pausing
+Once a timer has been created, the countdown can be paused by clicking the "pause" button in the top right of the timer window.
+
+![Hourglass Window][10]
+
+This will cause the animation to stop playing and for the words "(Paused)" to appear in the text area of the window. In the case where "Display time as text" has been selected, the "(Paused)" indicator will be appended to the remaining time.
+
+![Hourglass Window][11]
+
+To resume the countdown, the GM can simply press the "Resume" button (which has replaced the "Pause" button) in the top right of the window.
+
+Both the "Pause" and "Resume" buttons are only visible for users with GM role.
+
 ## Popout!
 The Popout! module is disabled for Hourglass Timer windows due to compatibility issues.
 
@@ -70,3 +100,7 @@ The Popout! module is disabled for Hourglass Timer windows due to compatibility 
 [5]: demo/hourglass-options-presets.PNG
 [6]: demo/flipdown.PNG
 [7]: demo/hourglass-manual.PNG
+[8]: demo/hourglass-menu.jpg
+[9]: demo/hourglass-options-sound.PNG
+[10]: demo/hourglass-pause.png
+[11]: demo/hourglass-paused.png

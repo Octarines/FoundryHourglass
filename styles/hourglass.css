@@ -72,6 +72,21 @@
   width: calc(3em * var(--scale));
 }
 
+.hourglass-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.hourglass-controls__control {
+  cursor: pointer;
+  font-size: 0.6em;
+}
+
+.hourglass-controls__control:hover {
+  text-shadow: 0 0 5px red;
+}
+
 .hourglass .top {
   position: absolute;
   left: 50%;

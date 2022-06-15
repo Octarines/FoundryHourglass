@@ -1,8 +1,13 @@
-import { uuidv4, setSelectedValue, hideFormElements } from "./tools.js";
+import { uuidv4, setSelectedValue, hideFormElements, playEndSound } from "./tools.js";
 
 export class HourglassGui extends FormApplication {
   constructor() {
     super();
+
+    // default minimise/restore functionality currently breaks the hourglass instance window so has been disabled for now
+    this._onToggleMinimize = async function(ev) {
+      ev.preventDefault();
+    };
 
     const presetJson = game.settings.get('hourglass','presets');
 
@@ -24,7 +29,9 @@ export class HourglassGui extends FormApplication {
     title: "Hourglass",
     size: "large",
     timeAsText: true,
-    endMessage: ""
+    endMessage: "",
+    endSound: "",
+    endSoundPath: ""
   };
 
   static get defaultOptions() {
@@ -53,9 +60,13 @@ export class HourglassGui extends FormApplication {
 
     this.initialiseTypes();
 
+    this.initialiseSoundPicker();
+
     // slight hack for checkbox and select dropdown initial value binding
     document.getElementById("hourglassTimeAsText").checked = HourglassGui.hourGlassDefaultOptions.timeAsText;
+
     setSelectedValue("hourglassSize", HourglassGui.hourGlassDefaultOptions.size);
+    setSelectedValue("endSound", HourglassGui.hourGlassDefaultOptions.endSound);
     setSelectedValue("durationType", HourglassGui.hourGlassDefaultOptions.durationType);
 
     document.getElementById('hourglass-gui-application').style.height = "auto";
@@ -86,7 +97,9 @@ export class HourglassGui extends FormApplication {
       timeAsText,
       sandColour,
       endMessage,
-      timerType } = formData;
+      timerType,
+      endSound,
+      endSoundPath } = formData;
 
     const hourglassOptions = {
       id: Math.floor(Math.random() * 9999),
@@ -99,7 +112,9 @@ export class HourglassGui extends FormApplication {
       timeAsText: timeAsText,
       sandColour: sandColour,
       endMessage: endMessage,
-      timerType: timerType
+      timerType: timerType,
+      endSound: endSound,
+      endSoundPath: endSoundPath
     };
 
     HourglassGui.hourGlassDefaultOptions = hourglassOptions;
@@ -130,7 +145,35 @@ export class HourglassGui extends FormApplication {
 
     setSelectedValue("durationType", HourglassGui.hourGlassDefaultOptions.durationType);
 
-    this.refreshTypeOptions()
+    this.refreshTypeOptions();
+  }
+
+  initialiseSoundPicker() {
+    const soundPickerText = document.getElementById("endSoundPath");
+    const soundPickerButton = document.getElementById("endSoundPathButton");
+
+    soundPickerButton.onclick = () => {
+      new FilePicker({
+        type: "audio",
+        current: soundPickerText.value,
+        field: soundPickerText,
+        callback: () => this.refreshEndSoundOptions()
+      }).browse();
+    };
+
+    const soundPreviewButton = document.getElementById("endSoundPreview");
+    soundPreviewButton.onclick = () => {
+      const endSound = document.getElementById("endSound").value;
+      const endSoundPath = document.getElementById("endSoundPath").value;
+
+      playEndSound(endSound, endSoundPath, false);
+    }
+
+    const endSoundSelect = document.getElementById("endSound");
+    endSoundSelect.onchange = () =>  this.refreshEndSoundOptions();
+
+    setSelectedValue("endSound", HourglassGui.hourGlassDefaultOptions.endSound);
+    this.refreshEndSoundOptions();
   }
 
   initialisePresets() {
@@ -164,15 +207,18 @@ export class HourglassGui extends FormApplication {
       document.getElementById("hourglassColour").value = selectedOptions.sandColour;
       document.getElementById("hourglassTimeAsText").checked = selectedOptions.timeAsText;
       document.getElementById("hourglassEndMessage").value = selectedOptions.endMessage;
+      document.getElementById("endSoundPath").value = selectedOptions.endSoundPath ?? "";
       setSelectedValue("timerType", selectedOptions.timerType);
 
-      //slight hack to ensure presents saved before addition of "durationType" and "hourglassSize" default to a value that matches their previous behaviour
+      //slight hack to ensure presents saved before addition of "durationType", "hourglassSize" and "endSound" default to a value that matches their previous behaviour
       setSelectedValue("durationType", selectedOptions.durationType === undefined ? "timed" : selectedOptions.durationType);
       setSelectedValue("hourglassSize", selectedOptions.size === undefined ? "large" : selectedOptions.size);
+      setSelectedValue("endSound", selectedOptions.endSound === undefined ? "" : selectedOptions.endSound);
     }
 
     this.refreshPresetButtons();
     this.refreshTypeOptions();
+    this.refreshEndSoundOptions();
   }
 
   updatePreset() {
@@ -197,10 +243,10 @@ export class HourglassGui extends FormApplication {
       durationIncrements: document.getElementById("hourglassDurationIncrements").value,
       sandColour: document.getElementById("hourglassColourText").value,
       timeAsText: document.getElementById("hourglassTimeAsText").checked,
-      endMessage: document.getElementById("hourglassEndMessage").value
+      endMessage: document.getElementById("hourglassEndMessage").value,
+      endSound: document.getElementById("endSound").value,
+      endSoundPath: document.getElementById("endSoundPath").value
     };
-
-    console.log(hourglassOptions);
 
     this.presets.push(hourglassOptions);
 
@@ -272,6 +318,23 @@ export class HourglassGui extends FormApplication {
     } else {
       hideFormElements(true, ["hourglassDurationSecondsContainer", "hourglassDurationMinutesContainer", "hourglassTimeAsTextLabel"]);
       hideFormElements(false, ["hourglassDurationIncrementsContainer", "hourglassIncrementsAsTextLabel"]);
+    }
+  }
+
+  refreshEndSoundOptions() {
+    const endSound = document.getElementById("endSound").value;
+    const endSoundPath = document.getElementById("endSoundPath").value;
+
+    if(endSound === 'custom') {
+      hideFormElements(false, ["endSoundPathContainer"]);
+    } else {
+      hideFormElements(true, ["endSoundPathContainer"]);
+    }
+
+    if(endSound === '' || (endSound === 'custom' && !!!endSoundPath && !!!endSoundPath.length)) {
+      document.getElementById("endSoundPreview").classList.add("hourglass-gui__form__button__disabled");
+    } else {
+      document.getElementById("endSoundPreview").classList.remove("hourglass-gui__form__button__disabled");
     }
   }
 }

@@ -5,6 +5,22 @@
   --rotor-text-colour: #FFFFFF;
 }
 
+.flipdown-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.flipdown-controls__control {
+  cursor: pointer;
+  font-size: calc(var(--messageScale) * 1.2em);
+  color: white;
+}
+
+.flipdown-controls__control:hover {
+  text-shadow: 0 0 5px red;
+}
+
 .flipdownbody {
   margin: 0;
   box-shadow: none;

@@ -1,4 +1,4 @@
-import { hideFormElements } from "./tools.js";
+import { hideFormElements, playEndSound } from "./tools.js";
 
 export class Hourglass extends Application {
 
@@ -18,6 +18,13 @@ export class Hourglass extends Application {
             }
         );
 
+
+        // default minimise/restore functionality currently breaks the hourglass instance window so has been disabled for now
+        this._onToggleMinimize = async function(ev) {
+            ev.preventDefault();
+        };
+
+
         this._id = options.id;
         this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
         this._canvasId = `hourglass-canvas-${this._id}`;
@@ -26,13 +33,18 @@ export class Hourglass extends Application {
         this._hourglassBottomId = `hourglass-bottom-${this._id}`;
         this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
         this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
+        this._pauseId = `hourglass-pause-${this._id}`;
         this._hourglassDripId = `hourglass-drip-${this._id}`;
         
         this._title = options.title;
         this._timeAsText = options.timeAsText;
         this._sandColour = options.sandColour;
         this._endMessage = options.endMessage;
+        this._endSound = options.endSound;
+        this._endSoundPath = options.endSoundPath;
         this._textScale = 1;
+
+        this._paused = false;
 
         switch(options.size) {
             case "tiny":
@@ -72,7 +84,6 @@ export class Hourglass extends Application {
                 }
         }
 
-
         this._durationType = options.durationType;
         this._durationIncrements = options.durationIncrements;
         this._duration = options.durationSeconds + (options.durationMinutes * 60);
@@ -88,6 +99,7 @@ export class Hourglass extends Application {
           hourglassBottomId: this._hourglassBottomId,
           durationIncrementDecrease: this._durationIncrementDecrease,
           durationIncrementIncrease: this._durationIncrementIncrease,
+          pauseId: this._pauseId,
           hourglassDripId: this._hourglassDripId
         };
     }
@@ -111,23 +123,31 @@ export class Hourglass extends Application {
 
         if(this._durationType !== "manual") {
             hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
+
+            if(game.user.isGM) {
+                document.getElementById(this._pauseId).onclick = () => {
+                    this.pauseClients();
+                };
+            } else {
+                hideFormElements(true, [this._pauseId]);
+            } 
+
             this.showTimeAsText();
         } else {
             var styleElem = document.head.appendChild(document.createElement("style"));
             styleElem.innerHTML = `#${this._hourglassTopId}:before {animation: none;} #${this._hourglassBottomId}:before {animation: none;}`;
-            hideFormElements(true, [this._hourglassDripId]);
+            hideFormElements(true, [this._hourglassDripId, this._pauseId]);
 
             if(game.user.isGM) {
                 document.getElementById(this._durationIncrementDecrease).onclick = () => {
-                    this.updateClients(-1)
+                    this.incrementClients(-1);
                 };
                 document.getElementById(this._durationIncrementIncrease).onclick = () => {
-                    this.updateClients(1)
-                };
-    
+                    this.incrementClients(1);
+                };    
                 document.getElementById(this._durationIncrementDecrease).disabled = true;
             } else {
-                hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
+                hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId]);
             }            
 
             if(this._timeAsText) {
@@ -161,6 +181,8 @@ export class Hourglass extends Application {
             if(!!this._endMessage && !!remainingTimeElement) {
                 remainingTimeElement.innerText = this._endMessage;
             }
+
+            playEndSound(this._endSound, this._endSoundPath, true);
         }
 
         document.getElementById(this._durationIncrementIncrease).disabled = expired;
@@ -173,7 +195,42 @@ export class Hourglass extends Application {
         canvasElement.style.setProperty('--translate-bottom-sand', sandTranslation + "%");
     }
 
-    updateClients (value) {
+    pauseTimer(pause) {
+        this._paused = pause;
+
+        let canvasElement = document.getElementById(this._canvasId);
+        canvasElement.style.setProperty('--animationPlayState', this._paused ? 'paused' : 'running');
+
+        const buttonIcon = this._paused ? 'play' : 'pause';
+        const buttonText = this._paused ? 'Resume' : 'Pause';
+
+        document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
+
+        const remainingTimeElement = document.getElementById(this._remainingTimeId);
+
+        if(pause) {
+            remainingTimeElement.innerText += " (Paused)";
+        } else {
+            remainingTimeElement.innerText = "";
+        }
+        
+    }
+
+    pauseClients() {
+        this._paused = !this._paused;
+
+        const pauseOptions = {
+            id: this._id,
+            pause: this._paused,
+            timerType: 'hourglass'
+        };
+
+        game.socket.emit('module.hourglass', { type:'pause', options: pauseOptions });
+
+        Hooks.call('pauseHourglass', pauseOptions);
+    }
+
+    incrementClients(value) {
         const incrementOptions = {
             id: this._id,
             increment: value,
@@ -187,30 +244,36 @@ export class Hourglass extends Application {
 
     showTimeAsText() {
         const timerInterval = setInterval(() => {
-            this._elapsedTime++;
+            if(!this._paused) {
+                this._elapsedTime++;
 
-            const expired = this._duration <= this._elapsedTime;
-
-            const remainingTimeElement = document.getElementById(this._remainingTimeId);
-
-            if(this._timeAsText) {
-                const remainingTime = this._duration - this._elapsedTime;
-
-                const displayTime = this.formatTimeForDisplay(remainingTime);
-
-                // Check the window is still open
-                if(!!remainingTimeElement){
-                    remainingTimeElement.innerText = displayTime;
-                } else {
-                    clearInterval(timerInterval);
+                const expired = this._duration <= this._elapsedTime;
+    
+                const remainingTimeElement = document.getElementById(this._remainingTimeId);
+    
+                if(this._timeAsText) {
+                    const remainingTime = this._duration - this._elapsedTime;
+    
+                    const displayTime = this.formatTimeForDisplay(remainingTime);
+    
+                    // Check the window is still open
+                    if(!!remainingTimeElement){
+                        remainingTimeElement.innerText = displayTime;
+                    } else {
+                        clearInterval(timerInterval);
+                    }
                 }
-            }
+    
+                if(expired) {
+                    clearInterval(timerInterval);
+    
+                    if(!!this._endMessage && !!remainingTimeElement) {
+                        remainingTimeElement.innerText = this._endMessage;
+                    }
 
-            if(expired) {
-                clearInterval(timerInterval);
-
-                if(!!this._endMessage && !!remainingTimeElement) {
-                    remainingTimeElement.innerText = this._endMessage;
+                    hideFormElements(true, [this._pauseId]);
+    
+                    playEndSound(this._endSound, this._endSoundPath, true);
                 }
             }
         }, 1000);

@@ -18,6 +18,29 @@
 .hourglass-gui .hourglass-gui__form .hourglass-gui__form__item__input {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__item__fileselect {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5em;
+}
+
+.hourglass-gui .hourglass-gui__form .hourglass-gui__form__item__fileselect__button {
+    height: 2em;
+    width: 2em;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px groove #f0f0e0;
+    box-sizing: border-box;
+}
+
+.hourglass-gui__form__item__fileselect__button:hover {
+    box-shadow: 0 0 5px red;
 }
 
 .hourglass-gui .hourglass-gui__form .hourglass-gui__form__title {
