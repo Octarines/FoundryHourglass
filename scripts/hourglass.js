@@ -37,6 +37,7 @@ export class Hourglass extends Application {
         this._hourglassDripId = `hourglass-drip-${this._id}`;
         
         this._title = options.title;
+        this._style = options.style;
         this._timeAsText = options.timeAsText;
         this._sandColour = options.sandColour;
         this._endMessage = options.endMessage;
@@ -118,6 +119,7 @@ export class Hourglass extends Application {
         canvasElement.style.setProperty('--sand-duration', this._duration + "s");
         canvasElement.style.setProperty('--sand-color', this._sandColour);
         canvasElement.style.setProperty('--scale', this._scale);
+        canvasElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`)
 
         this._elapsedTime = 0;
 

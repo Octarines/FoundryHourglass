@@ -27,6 +27,7 @@ export class HourglassGui extends FormApplication {
     durationIncrements: 4,
     sandColour: "#EDD0AA",
     title: "Hourglass",
+    style: "Hourglass_Empty",
     size: "large",
     timeAsText: true,
     endMessage: "",
@@ -68,6 +69,7 @@ export class HourglassGui extends FormApplication {
     setSelectedValue("hourglassSize", HourglassGui.hourGlassDefaultOptions.size);
     setSelectedValue("endSound", HourglassGui.hourGlassDefaultOptions.endSound);
     setSelectedValue("durationType", HourglassGui.hourGlassDefaultOptions.durationType);
+    setSelectedValue("styleSelect", HourglassGui.hourGlassDefaultOptions.style);
 
     document.getElementById('hourglass-gui-application').style.height = "auto";
   }
@@ -93,6 +95,7 @@ export class HourglassGui extends FormApplication {
       durationMinutes,
       durationIncrements,
       title,
+      style,
       size,
       timeAsText,
       sandColour,
@@ -108,6 +111,7 @@ export class HourglassGui extends FormApplication {
       durationMinutes: durationMinutes,
       durationIncrements: durationIncrements,
       title: title,
+      style: style,
       size: size,
       timeAsText: timeAsText,
       sandColour: sandColour,
@@ -210,7 +214,7 @@ export class HourglassGui extends FormApplication {
       document.getElementById("endSoundPath").value = selectedOptions.endSoundPath ?? "";
       setSelectedValue("timerType", selectedOptions.timerType);
 
-      //slight hack to ensure presents saved before addition of "durationType", "hourglassSize" and "endSound" default to a value that matches their previous behaviour
+      //slight hack to ensure presents saved before addition of new features default to a value that matches their previous behaviour
       setSelectedValue("durationType", selectedOptions.durationType === undefined ? "timed" : selectedOptions.durationType);
       setSelectedValue("hourglassSize", selectedOptions.size === undefined ? "large" : selectedOptions.size);
       setSelectedValue("endSound", selectedOptions.endSound === undefined ? "" : selectedOptions.endSound);
@@ -218,6 +222,13 @@ export class HourglassGui extends FormApplication {
 
     this.refreshPresetButtons();
     this.refreshTypeOptions();
+
+    if(!!selectedOptions) {
+      //since the available styles is dependent on the timer type, we need to set this value AFTER the type options have been populated
+      const defaultStyle = selectedOptions.timerType == "hourglass" ? "Hourglass_Empty" : "Flipdown";
+      setSelectedValue("styleSelect", selectedOptions.style === undefined ? defaultStyle : selectedOptions.style);
+    }
+
     this.refreshEndSoundOptions();
   }
 
@@ -236,6 +247,7 @@ export class HourglassGui extends FormApplication {
       id: presetId,
       timerType: document.getElementById("timerType").value,
       title: document.getElementById("hourglassTitle").value,
+      style: document.getElementById("styleSelect").value,
       size: document.getElementById("hourglassSize").value,
       durationType: document.getElementById("durationType").value,
       durationSeconds: document.getElementById("hourglassDurationSeconds").value,
@@ -308,8 +320,34 @@ export class HourglassGui extends FormApplication {
 
     if(typeSelect.value === "flipdown") {
       hideFormElements(true, ["hourglassColourContainer", "hourglassTimeAsTextContainer"]);
+      this.setStyleOptions([{
+        text: "Brass",
+        value: "Flipdown"
+      },{
+        text: "Plastic",
+        value: "Flipdown_Plastic"
+      }]);
+
+      //default selected value seems to be first alphabetically so setting this "original" styles
+      setSelectedValue("styleSelect", "Flipdown");
     } else {
       hideFormElements(false, ["hourglassColourContainer", "hourglassTimeAsTextContainer"]);
+      this.setStyleOptions([{
+        text: "Wooden",
+        value: "Hourglass_Empty"
+      },{
+        text: "Plastic",
+        value: "Hourglass_Empty_Plastic"
+      },{
+        text: "Stone (Round)",
+        value: "Hourglass_Empty_Stone_Round"
+      },{
+        text: "Stone (Square)",
+        value: "Hourglass_Empty_Stone_Square"
+      }]);
+
+      //default selected value seems to be first alphabetically so setting this "original" styles
+      setSelectedValue("styleSelect", "Hourglass_Empty");
     }
 
     if(durationSelect.value === "timed") {
@@ -318,6 +356,24 @@ export class HourglassGui extends FormApplication {
     } else {
       hideFormElements(true, ["hourglassDurationSecondsContainer", "hourglassDurationMinutesContainer", "hourglassTimeAsTextLabel"]);
       hideFormElements(false, ["hourglassDurationIncrementsContainer", "hourglassIncrementsAsTextLabel"]);
+    }
+  }
+
+  setStyleOptions(options) {
+    const styleSelect = document.getElementById("styleSelect");
+
+    for(let i = styleSelect.options.length; i >= 0; i--) {
+      styleSelect.remove(i);
+    }
+
+    const sortedOptions = options.sort((a, b) => a.text.localeCompare(b.text));
+
+    for(let i = 0; i < sortedOptions.length; i++) {
+        const option = sortedOptions[i];
+        let optionElement = document.createElement("option");
+        optionElement.textContent = option.text;
+        optionElement.value = option.value;
+        styleSelect.appendChild(optionElement);
     }
   }
 

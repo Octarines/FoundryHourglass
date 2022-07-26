@@ -26,6 +26,7 @@
   box-shadow: none;
   --scale: 1;
   --messageScale: 1;
+  --styleUrl: url(../images/Flipdown.png);
 }
 
 .flipdownbody .window-content {
@@ -99,7 +100,7 @@
   font-family: sans-serif;
   font-weight: bold;
 
-  background-image: url(../images/Flipdown.png);
+  background-image: var(--styleUrl);
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;

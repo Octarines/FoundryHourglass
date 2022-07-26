@@ -31,6 +31,7 @@ export class FlipDown extends Application {
     this._pauseId = `hourglass-pause-${this._id}`;
     
     this._title = options.title;
+    this._style = options.style;
     this._endMessage = options.endMessage;
     this._endSound = options.endSound;
     this._endSoundPath = options.endSoundPath;
@@ -120,6 +121,7 @@ export class FlipDown extends Application {
         windowElement.style.setProperty('width', this._width);
         windowElement.style.setProperty('--scale', this._scale);
         windowElement.style.setProperty('--messageScale', this._messageScale);
+        windowElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`)
 
     this.createRotors();
 

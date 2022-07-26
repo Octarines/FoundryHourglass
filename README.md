@@ -8,14 +8,14 @@
 
 Configurable animated graphical timers & round trackers for foundry VTT that can be shown by the GM to all players.
 
-![Hourglass Window][1]
-![Hourglass Window][6]
+![Hourglass Timer][1]
+![Flipdown Timer][6]
 
 ## Hourglass Options
 
 To create a new hourglass, a Game Master may select the hourglass icon under the _Token Controls_. 
 
-![Hourglass Window][8]
+![Hourglass Menu][8]
 
 This will open the options window for you to configure your hourglass.
 
@@ -23,6 +23,7 @@ This will open the options window for you to configure your hourglass.
 
 + **Timer Type** - The type of animated graphic to show to players. Options currently include "Hourglass" & "Flipdown Clock".
 + **Title** - The display name of the timer that will appear at the top left.
++ **Style** - The visual style of the timer graphic to be displayed.
 + **Size** - The display size of the timer window: Tiny, Small, Medium & Large.
 + **Duration Type** - Whether the timer should be an automatic (timed) or manual "on click" countdown.
 + **Duration (Seconds/Minutes)** - The time taken for the hourglass to complete.
@@ -35,11 +36,13 @@ This will open the options window for you to configure your hourglass.
 
 The _start hourglass_ button, once pressed, will cause a new hourglass window to appear on the screen of all players currently in the game session using the chosen options:
 
-![Hourglass Window][3]
+![Hourglass Timer Purple][3]
 
 Once the duration has elapsed, the remaining time will dissapear and be replaced by the _end message_ (if one has been entered):
 
-![Hourglass Window][4]
+![Hourglass Timer Message][4]
+
+An _end sound_ will also be played to all players (if one has been selected).
 
 Players can move the hourglass around the screen while it is counting down. They do also have the option of closing it, though they should only do this once the duration has elapsed.
 
@@ -50,15 +53,34 @@ Multiple hourglasses can be opened by a GM at one time, should you wish to track
 ## Manual "on click" control
 Timers can be set to "manual" control by setting the Duration type to "Manual (user click)" in the hourglass options.
 
-![Hourglass Window][7]
+![Hourglass Timer Manual][7]
 
 The manual timers feature a forward and backward button that, when clicked, will decrease and increase the remaining increments respectively. This could potentially be used by GMs to include manually controlled/incremented events or round tracking within their games. Both forward and back buttons are only visible to users with the GM role.
+
+## Styles
+As well as changing the sand colour, each timer has a range of different visual styles to choose from.
+
+<table>
+<tr>
+<td>
+<img src="https://raw.githubusercontent.com/Octarines/FoundryHourglass/main/demo/hourglass-custom-round.PNG"
+     alt="Hourglass Timer Round Stone"/>
+</td>
+<td>
+<img src="https://raw.githubusercontent.com/Octarines/FoundryHourglass/main/demo/hourglass-custom-square.PNG"
+     alt="Hourglass Timer Round Stone"/>
+</td>
+</tr>
+</table>
+Each style has all of the same functionality and customisation options as the default.
+
+A heartfelt thankyou to artist [Zael](https://foundryvtt.com/community/zael) for creating some fantastic alternative timer styles with a range of themes.
 
 ## Presets
 
 Game Masters have the ability to save Hourglass Options as _Presets_. This will allow frequently used configurations to be quickly recalled and displayed.
 
-![Hourglass Window][5]
+![Hourglass Window Preset][5]
 
 + **Select Preset** - Presents a dropdown list of all previously saved Hourglasses. A GM can select a preset from this list to populate all options fields with data saved for that preset.
 + **Save New** - Will persist all currently entered options as a new Preset with a name matching the Title field.
@@ -68,7 +90,7 @@ Game Masters have the ability to save Hourglass Options as _Presets_. This will 
 ## End Sound
 Games masters can choose to play a sound at the end of the timer duration by selecting it from the "End Sound" dropdown in the options window.
 
-![Hourglass Window][9]
+![Hourglass Window Sounds][9]
 
 Once selected, the sound can be previewed (in the GM's client only) by pressing the "Play" button on the right of the dropdown.
 
@@ -80,11 +102,11 @@ When an End Sound is selected, this sound will play in all clients where the tim
 ## Pausing
 Once a timer has been created, the countdown can be paused by clicking the "pause" button in the top right of the timer window.
 
-![Hourglass Window][10]
+![Hourglass Timer Pause][10]
 
 This will cause the animation to stop playing and for the words "(Paused)" to appear in the text area of the window. In the case where "Display time as text" has been selected, the "(Paused)" indicator will be appended to the remaining time.
 
-![Hourglass Window][11]
+![Hourglass Timer Resume][11]
 
 To resume the countdown, the GM can simply press the "Resume" button (which has replaced the "Pause" button) in the top right of the window.
 
