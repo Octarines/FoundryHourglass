@@ -9,7 +9,14 @@ export class HourglassGui extends FormApplication {
       ev.preventDefault();
     };
 
-    const presetJson = game.settings.get('hourglass','presets');
+    let presetJson;
+
+    try {
+      presetJson = game.settings.get('hourglass','presets');
+    }
+    catch(ex) {
+      console.log('No existing hourglass presets found.')
+    }
 
     if(!!presetJson) {
       this.presets = JSON.parse(presetJson);
