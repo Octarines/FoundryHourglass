@@ -313,6 +313,7 @@ export class Hourglass extends Application {
     }
 
   resetTimer() {
+    console.log(`Resetting timer!`)
     this._elapsedTime = 0;
 
     // const remainingTimeElement = document.getElementById(this._remainingTimeId);
