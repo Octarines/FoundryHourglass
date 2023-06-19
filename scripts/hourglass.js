@@ -127,7 +127,7 @@ export class Hourglass extends Application {
 
         const resetButton = document.getElementById(this._durationReset);
         resetButton.onclick = () => {
-            this.resetTimer();
+            this.resetClients();
         };
 
         if(this._durationType !== "manual") {
@@ -251,6 +251,17 @@ export class Hourglass extends Application {
         Hooks.call('incrementHourglass', incrementOptions);
     }
 
+    resetClients() {
+      const resetOptions = {
+        id: this._id,
+        timerType: 'hourglass',
+      }
+
+      game.socket.emit('module.hourglass', {type: 'reset', options: resetOptions});
+
+      Hooks.call('resetHourglass', resetOptions);
+  }
+
     showTimeAsText() {
         const timerInterval = setInterval(() => {
             if(!this._paused) {
@@ -315,16 +326,12 @@ export class Hourglass extends Application {
 
   resetTimer() {
     console.log(`Resetting timer!`);
-    this._elapsedTime = 0;
-
-    // const remainingTimeElement = document.getElementById(this._remainingTimeId);
-    // remainingTimeElement.innerText = "";
-
-    // document.getElementById(this._durationIncrementDecrease).disabled = true;
-    // document.getElementById(this._durationIncrementIncrease).disabled = false;
+    this.pauseTimer(true);
+    this.updateIncrement(-this._elapsedTime);
 
     let canvasElement = document.getElementById(this._canvasId);
     canvasElement.style.setProperty('--translate-top-sand', "0%");
     canvasElement.style.setProperty('--translate-bottom-sand', "100%");
+
   }
 }

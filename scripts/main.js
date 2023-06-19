@@ -62,3 +62,13 @@ Hooks.on("pauseHourglass", async (options) => {
       Hourglass.timers.find(x => x.id === options.id)?.timer?.pauseTimer(options.pause);
   }
 })
+
+Hooks.on('resetHourglass', async (options) => {
+  switch(options.timerType) {
+    case 'flipdown':
+      FlipDown.timers.find(x => x.id === options.id)?.timer?.resetTimer();
+      break;
+    default:
+      Hourglass.timers.find(x => x.id === options.id)?.timer?.resetTimer();
+  }
+})
