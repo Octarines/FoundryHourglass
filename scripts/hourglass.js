@@ -101,6 +101,7 @@ export class Hourglass extends Application {
           hourglassBottomId: this._hourglassBottomId,
           durationIncrementDecrease: this._durationIncrementDecrease,
           durationIncrementIncrease: this._durationIncrementIncrease,
+          durationReset: this._durationReset,
           pauseId: this._pauseId,
           hourglassDripId: this._hourglassDripId
         };
@@ -313,7 +314,7 @@ export class Hourglass extends Application {
     }
 
   resetTimer() {
-    console.log(`Resetting timer!`)
+    console.log(`Resetting timer!`);
     this._elapsedTime = 0;
 
     // const remainingTimeElement = document.getElementById(this._remainingTimeId);
