@@ -33,6 +33,7 @@ export class Hourglass extends Application {
         this._hourglassBottomId = `hourglass-bottom-${this._id}`;
         this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
         this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
+        this._durationReset = `duration-reset-${this._id}`;
         this._pauseId = `hourglass-pause-${this._id}`;
         this._hourglassDripId = `hourglass-drip-${this._id}`;
 
@@ -122,6 +123,11 @@ export class Hourglass extends Application {
         canvasElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`)
 
         this._elapsedTime = 0;
+
+        const resetButton = document.getElementById(this._durationReset);
+        resetButton.onclick = () => {
+            this.resetTimer();
+        };
 
         if(this._durationType !== "manual") {
             hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
