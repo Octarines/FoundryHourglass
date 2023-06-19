@@ -326,12 +326,6 @@ export class Hourglass extends Application {
 
   resetTimer() {
     console.log(`Resetting timer!`);
-    this.pauseTimer(true);
-    this.updateIncrement(-this._elapsedTime);
-
-    let canvasElement = document.getElementById(this._canvasId);
-    canvasElement.style.setProperty('--translate-top-sand', "0%");
-    canvasElement.style.setProperty('--translate-bottom-sand', "100%");
-
+    this.incrementClients(-this._elapsedTime);
   }
 }
