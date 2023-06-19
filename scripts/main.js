@@ -24,10 +24,10 @@ Hooks.once("ready", () => {
         Hooks.call('showHourglass', options.options);
         break;
       case 'increment':
-        Hooks.call('incrementHourglass', options.options); 
+        Hooks.call('incrementHourglass', options.options);
         break;
       case 'pause':
-        Hooks.call('pauseHourglass', options.options); 
+        Hooks.call('pauseHourglass', options.options);
         break;
     }
   });
@@ -61,4 +61,14 @@ Hooks.on("pauseHourglass", async (options) => {
     default:
       Hourglass.timers.find(x => x.id === options.id)?.timer?.pauseTimer(options.pause);
   }
+
+Hooks.on("resetHourglass", async (options) => {
+  switch(options.timerType) {
+    case 'flipdown':
+      FlipDown.timers.find(x => x.id === options.id)?.timer?.resetTimer();
+      break;
+    default:
+      Hourglass.timers.find(x => x.id === options.id)?.timer?.resetTimer();
+  }
+})
 })

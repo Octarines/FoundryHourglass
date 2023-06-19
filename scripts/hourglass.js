@@ -35,7 +35,7 @@ export class Hourglass extends Application {
         this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
         this._pauseId = `hourglass-pause-${this._id}`;
         this._hourglassDripId = `hourglass-drip-${this._id}`;
-        
+
         this._title = options.title;
         this._style = options.style;
         this._timeAsText = options.timeAsText;
@@ -76,7 +76,7 @@ export class Hourglass extends Application {
                     this._scale = 1;
                     break;
                 }
-            default: 
+            default:
                 {
                     this._height = "600px";
                     this._width = "350px";
@@ -89,8 +89,8 @@ export class Hourglass extends Application {
         this._durationIncrements = options.durationIncrements;
         this._duration = options.durationSeconds + (options.durationMinutes * 60);
     }
-    
-    getData() { 
+
+    getData() {
         return {
           duration: this._timeAsText ? this.formatTimeForDisplay(this._duration) : '',
           sandColour: '#EDD0AA',
@@ -132,7 +132,7 @@ export class Hourglass extends Application {
                 };
             } else {
                 hideFormElements(true, [this._pauseId]);
-            } 
+            }
 
             this.showTimeAsText();
         } else {
@@ -146,16 +146,16 @@ export class Hourglass extends Application {
                 };
                 document.getElementById(this._durationIncrementIncrease).onclick = () => {
                     this.incrementClients(1);
-                };    
+                };
                 document.getElementById(this._durationIncrementDecrease).disabled = true;
             } else {
                 hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId]);
-            }            
+            }
 
             if(this._timeAsText) {
                 const remainingTimeElement = document.getElementById(this._remainingTimeId);
                 remainingTimeElement.innerText = this._durationIncrements;
-            }            
+            }
         }
     }
 
@@ -215,7 +215,7 @@ export class Hourglass extends Application {
         } else {
             remainingTimeElement.innerText = "";
         }
-        
+
     }
 
     pauseClients() {
@@ -250,14 +250,14 @@ export class Hourglass extends Application {
                 this._elapsedTime++;
 
                 const expired = this._duration <= this._elapsedTime;
-    
+
                 const remainingTimeElement = document.getElementById(this._remainingTimeId);
-    
+
                 if(this._timeAsText) {
                     const remainingTime = this._duration - this._elapsedTime;
-    
+
                     const displayTime = this.formatTimeForDisplay(remainingTime);
-    
+
                     // Check the window is still open
                     if(!!remainingTimeElement){
                         remainingTimeElement.innerText = displayTime;
@@ -265,23 +265,23 @@ export class Hourglass extends Application {
                         clearInterval(timerInterval);
                     }
                 }
-    
+
                 if(expired) {
                     clearInterval(timerInterval);
-    
+
                     if(!!this._endMessage && !!remainingTimeElement) {
                         remainingTimeElement.innerText = this._endMessage;
                     }
 
                     hideFormElements(true, [this._pauseId]);
-    
+
                     playEndSound(this._endSound, this._endSoundPath, true);
                 }
             }
         }, 1000);
     }
 
-    formatTimeForDisplay(time) {        
+    formatTimeForDisplay(time) {
         let displayTime;
 
         if(time < 60) {
@@ -292,7 +292,7 @@ export class Hourglass extends Application {
                 minute: '2-digit',
                 second: '2-digit'
             });
-        } else {            
+        } else {
             const hours = Math.floor(time / 3600);
             const minutesSeconds = time - (hours * 3600);
             const remainingTimeObject = new Date(minutesSeconds * 1000);
@@ -305,4 +305,18 @@ export class Hourglass extends Application {
 
         return displayTime;
     }
+
+  resetTimer() {
+    this._elapsedTime = 0;
+
+    // const remainingTimeElement = document.getElementById(this._remainingTimeId);
+    // remainingTimeElement.innerText = "";
+
+    // document.getElementById(this._durationIncrementDecrease).disabled = true;
+    // document.getElementById(this._durationIncrementIncrease).disabled = false;
+
+    let canvasElement = document.getElementById(this._canvasId);
+    canvasElement.style.setProperty('--translate-top-sand', "0%");
+    canvasElement.style.setProperty('--translate-bottom-sand', "100%");
+  }
 }
