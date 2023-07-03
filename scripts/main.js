@@ -29,6 +29,9 @@ Hooks.once("ready", () => {
       case 'pause':
         Hooks.call('pauseHourglass', options.options);
         break;
+      case 'reset':
+        Hooks.call('resetHourglass', options.options);
+        break;
     }
   });
 });
