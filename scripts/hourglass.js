@@ -334,7 +334,11 @@ export class Hourglass extends Application {
     this._intervalIds.forEach(id => clearInterval(id))
     this._elapsedTime = 0
     this.showTimeAsText();
-    hideFormElements(false, [this._pauseId]);
+    if (game.user.isGM) {
+      hideFormElements(false, [this._pauseId]);
+    } else {
+      hideFormElements(true, [this._pauseId]);
+    }
     // Reset the sand
     const top = document.getElementById(this._hourglassTopId);
     const bottom = document.getElementById(this._hourglassBottomId);
