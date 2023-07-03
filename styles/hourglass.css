@@ -114,10 +114,6 @@
   transform: translateY(var(--translate-top-sand));
 }
 
-.reset-animation::before {
-  animation: var(--sand-duration) lowerTopSand linear;
-}
-
 @keyframes lowerTopSand {
   0% {
     transform: none;

@@ -331,11 +331,11 @@ export class Hourglass extends Application {
     this._elapsedTime = 0
     this.showTimeAsText();
     hideFormElements(false, [this._pauseId]);
-    const canvasElement = document.getElementById(this._canvasId);
-    canvasElement.style.setProperty('--translate-top-sand', 0 + "%");
-    canvasElement.style.setProperty('--translate-bottom-sand', 100 + "%");
-    const hourglassTop = document.getElementById(this._hourglassTopId);
-    hourglassTop.classList.remove('reset-animation')
-    hourglassTop.classList.add('reset-animation')
+    const top = document.getElementById(this._hourglassTopId);
+    const bottom = document.getElementById(this._hourglassBottomId);
+    const newTop = top.cloneNode()
+    const newBottom = bottom.cloneNode()
+    top.parentNode.replaceChild(newTop, top)
+    bottom.parentNode.replaceChild(newBottom, bottom)
   }
 }
