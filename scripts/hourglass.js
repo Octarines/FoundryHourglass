@@ -131,6 +131,10 @@ export class Hourglass extends Application {
             this.resetClients();
         };
 
+        if (!game.user.isGM) {
+          resetButton.style.display = "none";
+        }
+
         if(this._durationType !== "manual") {
             hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
 
