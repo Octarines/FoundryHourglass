@@ -47,6 +47,7 @@ export class Hourglass extends Application {
         this._textScale = 1;
 
         this._paused = false;
+        this._intervalIds = [];
 
         switch(options.size) {
             case "tiny":
@@ -297,6 +298,7 @@ export class Hourglass extends Application {
                 }
             }
         }, 1000);
+      this._intervalIds.push(timerId)
     }
 
     formatTimeForDisplay(time) {
@@ -325,28 +327,8 @@ export class Hourglass extends Application {
     }
 
   resetTimer() {
-    console.log(`Resetting timer!`);
-    this._elapsedTime = 0;
-    const remainingIncrements = this._durationIncrements - this._elapsedTime;
-    // const expired = this._durationIncrements <= this._elapsedTime;
-    const remainingTimeElement = document.getElementById(this._remainingTimeId);
-    if(this._timeAsText) {
-        const displayTime = remainingIncrements;
-
-        // Check the window is still open
-        if(!!remainingTimeElement){
-            remainingTimeElement.innerText = displayTime;
-        }
-    } else {
-        if(!!remainingTimeElement){
-            remainingTimeElement.innerText = "";
-        }
-    }
-
-    const sandTranslation = ( remainingIncrements / this._durationIncrements ) * 100;
-
-    let canvasElement = document.getElementById(this._canvasId);
-    canvasElement.style.setProperty('--translate-top-sand', 100 - sandTranslation + "%");
-    canvasElement.style.setProperty('--translate-bottom-sand', sandTranslation + "%");
+    this._intervalIds.forEach(id => clearInterval(id))
+    this._elapsedTime = 0
+    this.showTimeAsText();
   }
 }
