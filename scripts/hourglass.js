@@ -298,7 +298,7 @@ export class Hourglass extends Application {
                 }
             }
         }, 1000);
-      this._intervalIds.push(timerId)
+      this._intervalIds.push(timerInterval)
     }
 
     formatTimeForDisplay(time) {
@@ -330,5 +330,12 @@ export class Hourglass extends Application {
     this._intervalIds.forEach(id => clearInterval(id))
     this._elapsedTime = 0
     this.showTimeAsText();
+    hideFormElements(false, [this._pauseId]);
+    const canvasElement = document.getElementById(this._canvasId);
+    canvasElement.style.setProperty('--translate-top-sand', 0 + "%");
+    canvasElement.style.setProperty('--translate-bottom-sand', 100 + "%");
+    const hourglassTop = document.getElementById(this._hourglassTopId);
+    hourglassTop.classList.remove('reset-animation')
+    hourglassTop.classList.add('reset-animation')
   }
 }
