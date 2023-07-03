@@ -126,10 +126,14 @@ export class Hourglass extends Application {
 
         this._elapsedTime = 0;
 
-        const resetButton = document.getElementById(this._durationReset);
-        resetButton.onclick = () => {
-            this.resetClients();
-        };
+        if (game.user.isGM) {
+            const resetButton = document.getElementById(this._durationReset);
+            resetButton.onclick = () => {
+                this.resetClients();
+            };
+        } else {
+            hideFormElements(true, [this._durationReset]);
+        }
 
         if(this._durationType !== "manual") {
             hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
@@ -331,6 +335,7 @@ export class Hourglass extends Application {
     this._elapsedTime = 0
     this.showTimeAsText();
     hideFormElements(false, [this._pauseId]);
+    // Reset the sand
     const top = document.getElementById(this._hourglassTopId);
     const bottom = document.getElementById(this._hourglassBottomId);
     const newTop = top.cloneNode()
