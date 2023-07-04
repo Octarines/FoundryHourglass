@@ -334,17 +334,15 @@ export class Hourglass extends Application {
     this._intervalIds.forEach(id => clearInterval(id))
     this._elapsedTime = 0
     this.showTimeAsText();
-    if (game.user.isGM) {
-      hideFormElements(false, [this._pauseId]);
-    } else {
-      hideFormElements(true, [this._pauseId]);
-    }
     // Reset the sand
     const top = document.getElementById(this._hourglassTopId);
     const bottom = document.getElementById(this._hourglassBottomId);
+    const drip = document.getElementById(this._hourglassDripId);
     const newTop = top.cloneNode()
     const newBottom = bottom.cloneNode()
+    const newDrip = drip.cloneNode()
     top.parentNode.replaceChild(newTop, top)
     bottom.parentNode.replaceChild(newBottom, bottom)
+    drip.parentNode.replaceChild(newDrip, drip)
   }
 }
