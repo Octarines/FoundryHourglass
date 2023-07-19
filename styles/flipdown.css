@@ -9,12 +9,20 @@
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  flex-direction: row;
 }
 
 .flipdown-controls__control {
   cursor: pointer;
   font-size: calc(var(--messageScale) * 1.2em);
   color: white;
+  display: grid;
+  grid-gap: 0.3em;
+  grid-template-columns: auto 1fr;
+  justify-items: left;
+  align-items: center;
+  margin-right: 0.6em;
 }
 
 .flipdown-controls__control:hover {

@@ -1,4 +1,4 @@
-# FoundryHourglass
+# Foundry Hourglass
 
 ![Latest Release Download Count](https://img.shields.io/badge/dynamic/json?label=Downloads%20(Latest)&query=assets%5B0%5D.download_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2FOctarines%2FFoundryHourglass%2Freleases%2Flatest)
 ![Latest Release Download Count](https://img.shields.io/github/downloads/octarines/foundryhourglass/total?color=blue&label=Downloads%20%28Total%29)
@@ -31,6 +31,7 @@ This will open the options window for you to configure your hourglass.
 + **Display time as text?** - Indicates whether you wish to display the remaining time as a text overlay on the hourglass.
 + **End message** - Text to be displayed as an overlay on the hourglass after the duration has passed.
 + **End sound** - Sound to be played to all players after the duration has passed (more details below).
++ **Close after duration?** - Indicates whether you wish the timer window to automatically close (for all users) after the duration has passed.
 
 ## Usage
 
@@ -99,8 +100,12 @@ The GM may alternatively choose to add their own sound from a file by selecting 
 
 When an End Sound is selected, this sound will play in all clients where the timer window appears once the timer duration has elapsed. 
 
-## Pausing
-Once a timer has been created, the countdown can be paused by clicking the "pause" button in the top right of the timer window.
+## Timer Controls
+Once a timer has been created, the countdown & animation can be paused or restarted by use of the "Timer Controls" in the top right of the timer window.
+The "Timer Control" buttons are only visible for users with GM role.
+
+### Pausing
+Pressing the "pause" button will have the effect of pausing the countdown for all players.
 
 ![Hourglass Timer Pause][10]
 
@@ -110,7 +115,19 @@ This will cause the animation to stop playing and for the words "(Paused)" to ap
 
 To resume the countdown, the GM can simply press the "Resume" button (which has replaced the "Pause" button) in the top right of the window.
 
-Both the "Pause" and "Resume" buttons are only visible for users with GM role.
+### Restarting
+Pressing the "restart" button will have the effect of restarting the countdown and animation for all players. 
+
+![Hourglass Timer Resume][12]
+
+The timer can be restarted at any time, including after the duration is expired & when paused.
+
+If a player has closed their timer window, the restart will also have the added effect of redisplaying it for them.
+
+## Closing the Timer
+From version 1.7.0 of the Hourglass module, closing a timer window as a user with GM role will also close that timer for all other players. 
+
+Pressing the "close" button as a non-GM user will still only close the window for yourself.
 
 ## Popout!
 The Popout! module is disabled for Hourglass Timer windows due to compatibility issues.
@@ -126,3 +143,4 @@ The Popout! module is disabled for Hourglass Timer windows due to compatibility 
 [9]: demo/hourglass-options-sound.PNG
 [10]: demo/hourglass-pause.png
 [11]: demo/hourglass-paused.png
+[12]: demo/hourglass-restart.png

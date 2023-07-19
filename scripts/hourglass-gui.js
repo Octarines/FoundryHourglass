@@ -39,7 +39,8 @@ export class HourglassGui extends FormApplication {
     timeAsText: true,
     endMessage: "",
     endSound: "",
-    endSoundPath: ""
+    endSoundPath: "",
+    closeAtEnd: false
   };
 
   static get defaultOptions() {
@@ -72,6 +73,7 @@ export class HourglassGui extends FormApplication {
 
     // slight hack for checkbox and select dropdown initial value binding
     document.getElementById("hourglassTimeAsText").checked = HourglassGui.hourGlassDefaultOptions.timeAsText;
+    document.getElementById("hourglassCloseAtEnd").checked = HourglassGui.hourGlassDefaultOptions.closeAtEnd;
 
     setSelectedValue("hourglassSize", HourglassGui.hourGlassDefaultOptions.size);
     setSelectedValue("endSound", HourglassGui.hourGlassDefaultOptions.endSound);
@@ -105,6 +107,7 @@ export class HourglassGui extends FormApplication {
       style,
       size,
       timeAsText,
+      closeAtEnd,
       sandColour,
       endMessage,
       timerType,
@@ -121,6 +124,7 @@ export class HourglassGui extends FormApplication {
       style: style,
       size: size,
       timeAsText: timeAsText,
+      closeAtEnd: closeAtEnd,
       sandColour: sandColour,
       endMessage: endMessage,
       timerType: timerType,
@@ -221,10 +225,11 @@ export class HourglassGui extends FormApplication {
       document.getElementById("endSoundPath").value = selectedOptions.endSoundPath ?? "";
       setSelectedValue("timerType", selectedOptions.timerType);
 
-      //slight hack to ensure presents saved before addition of new features default to a value that matches their previous behaviour
+      //ensure presents saved before addition of new features default to a value that matches their previous behaviour
       setSelectedValue("durationType", selectedOptions.durationType === undefined ? "timed" : selectedOptions.durationType);
       setSelectedValue("hourglassSize", selectedOptions.size === undefined ? "large" : selectedOptions.size);
       setSelectedValue("endSound", selectedOptions.endSound === undefined ? "" : selectedOptions.endSound);
+      document.getElementById("hourglassCloseAtEnd").checked = selectedOptions.closeAtEnd ?? false;
     }
 
     this.refreshPresetButtons();
@@ -262,6 +267,7 @@ export class HourglassGui extends FormApplication {
       durationIncrements: document.getElementById("hourglassDurationIncrements").value,
       sandColour: document.getElementById("hourglassColourText").value,
       timeAsText: document.getElementById("hourglassTimeAsText").checked,
+      closeAtEnd: document.getElementById("hourglassCloseAtEnd").checked,
       endMessage: document.getElementById("hourglassEndMessage").value,
       endSound: document.getElementById("endSound").value,
       endSoundPath: document.getElementById("endSoundPath").value

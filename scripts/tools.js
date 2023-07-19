@@ -44,3 +44,10 @@ export const playEndSound = (endSound, endSoundPath, global) => {
     }
   }
 }
+
+export const restartCssAnimation = (elementId, cssClass) => {
+  const element = document.getElementById(elementId);
+  element.classList.remove(cssClass);
+  void element.offsetWidth;
+  element.classList.add(cssClass);
+}

@@ -29,6 +29,12 @@ Hooks.once("ready", () => {
       case 'pause':
         Hooks.call('pauseHourglass', options.options); 
         break;
+      case 'restart':
+        Hooks.call('restartHourglass', options.options); 
+        break;
+      case 'close':
+        Hooks.call('closeHourglass', options.options); 
+        break;
     }
   });
 });
@@ -60,5 +66,36 @@ Hooks.on("pauseHourglass", async (options) => {
       break;
     default:
       Hourglass.timers.find(x => x.id === options.id)?.timer?.pauseTimer(options.pause);
+  }
+})
+
+Hooks.on("restartHourglass", async (options) => {
+  let timer;
+
+  switch(options.timerType) {
+    case 'flipdown':
+      timer = FlipDown.timers.find(x => x.id === options.id)?.timer;
+      break;
+    default:
+      timer = Hourglass.timers.find(x => x.id === options.id)?.timer;
+      break;
+  }
+
+  if(!!timer) {
+    if(timer.rendered) {
+      timer.restartTimer();
+    } else {
+      timer.render(true);
+    }
+  }
+})
+
+Hooks.on("closeHourglass", async (options) => {
+  switch(options.timerType) {
+    case 'flipdown':
+      FlipDown.timers.find(x => x.id === options.id)?.timer?.closeTimer();
+      break;
+    default:
+      Hourglass.timers.find(x => x.id === options.id)?.timer?.closeTimer();
   }
 })

@@ -29,16 +29,19 @@ export class FlipDown extends Application {
     this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
     this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
     this._pauseId = `hourglass-pause-${this._id}`;
+    this._restartId = `hourglass-restart-${this._id}`;
     
     this._title = options.title;
     this._style = options.style;
     this._endMessage = options.endMessage;
     this._endSound = options.endSound;
     this._endSoundPath = options.endSoundPath;
+    this._closeAtEnd = options.closeAtEnd;
 
     this._durationType = options.durationType;
     this._duration = options.durationSeconds + (options.durationMinutes * 60);
     this._durationIncrements = options.durationIncrements;
+    this._timerInterval;
     
     this.rotors = [];
     this.rotorLeafFront = [];
@@ -103,7 +106,8 @@ export class FlipDown extends Application {
         remainingTimeId: `hourglass-remaining-time-${this._id}`,
         durationIncrementDecrease: this._durationIncrementDecrease,
         durationIncrementIncrease: this._durationIncrementIncrease,
-        pauseId: this._pauseId
+        pauseId: this._pauseId,
+        restartId: this._restartId
       };
   }
 
@@ -134,29 +138,18 @@ export class FlipDown extends Application {
         document.getElementById(this._pauseId).onclick = () => {
             this.pauseClients();
         };
+        document.getElementById(this._restartId).onclick = () => {
+          this.restartClients();
+        };
       } else {
-          hideFormElements(true, [this._pauseId]);
-      } 
+          hideFormElements(true, [this._pauseId, this._restartId]);
+      }
 
       this.updateClockValues(this._duration, false);
-
       this.updateClockValues(this._duration, true);
-
-      const timerInterval = setInterval(() => {
-        if(!this._paused) {
-          this._elapsedTime++;
-  
-          const remainingTime = this._duration - this._elapsedTime;
-    
-          this.updateClockValues(remainingTime, false);
-    
-          if(remainingTime <= 0) {
-            clearInterval(timerInterval);
-          }
-        }        
-      }, 1000);
+      this.pauseTimer(this._paused);
     } else {
-      hideFormElements(true, [this._pauseId]);
+      hideFormElements(true, [this._pauseId, this._restartId]);
       this.updateClockValues(this._durationIncrements);
 
       this.updateClockValues(this._durationIncrements, true, true);
@@ -174,6 +167,20 @@ export class FlipDown extends Application {
     }
   }
 
+  startTimerCountdown() {
+    this._timerInterval = setInterval(() => {
+      this._elapsedTime++;
+
+      const remainingTime = this._duration - this._elapsedTime;
+
+      this.updateClockValues(remainingTime, false);
+
+      if(remainingTime <= 0) {
+        clearInterval(this._timerInterval);
+      }      
+    }, 1000);
+  }
+
   updateIncrement (value) {
     this._elapsedTime += value;
     const expired = this._durationIncrements <= this._elapsedTime;
@@ -185,23 +192,23 @@ export class FlipDown extends Application {
     this.updateClockValues(remainingIncrements, false, true);
   }
 
-  pauseTimer(pause) {
-    this._paused = pause;
+  pauseTimer(paused) {
+    this._paused = paused;
 
-    let canvasElement = document.getElementById(this._canvasId);
-    canvasElement.style.setProperty('--animationPlayState', this._paused ? 'paused' : 'running');
+    const remainingTimeElement = document.getElementById(this._remainingTimeId);    
+    if(!!remainingTimeElement) {
+      remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
 
-    const buttonIcon = this._paused ? 'play' : 'pause';
-    const buttonText = this._paused ? 'Resume' : 'Pause';
+      const buttonIcon = this._paused ? 'play' : 'pause';
+      const buttonText = this._paused ? 'Resume' : 'Pause';
 
-    document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
+      document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;      
+    }
 
-    const remainingTimeElement = document.getElementById(this._remainingTimeId);
-
-    if(pause) {
-        remainingTimeElement.innerText += " (Paused)";
+    if(this._paused) {
+      clearInterval(this._timerInterval);
     } else {
-        remainingTimeElement.innerText = "";
+        this.startTimerCountdown();
     }
   }
 
@@ -217,6 +224,46 @@ export class FlipDown extends Application {
       game.socket.emit('module.hourglass', { type:'pause', options: pauseOptions });
 
       Hooks.call('pauseHourglass', pauseOptions);
+  }
+
+  restartTimer() {
+    if(game.user.isGM) {
+        hideFormElements(false, [this._pauseId]);
+    }
+    
+    clearInterval(this._timerInterval);
+
+    this._elapsedTime = 0;
+
+    this.updateClockValues(this._duration, false);
+    this.updateClockValues(this._duration, true);
+
+    const remainingTimeElement = document.getElementById(this._remainingTimeId);
+    remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+    
+    this.pauseTimer(this._paused);      
+  }
+
+  restartClients() {
+      const restartOptions = {
+          id: this._id,
+          timerType: 'flipdown'
+      };
+
+      game.socket.emit('module.hourglass', { type:'restart', options: restartOptions });
+
+      Hooks.call('restartHourglass', restartOptions);
+  }
+
+  closeClients() {
+    const closeOptions = {
+        id: this._id,
+        timerType: 'flipdown'
+    };
+
+    game.socket.emit('module.hourglass', { type:'close', options: closeOptions });
+
+    Hooks.call('closeHourglass', closeOptions);
   }
 
   incrementClients(value) {
@@ -309,6 +356,20 @@ export class FlipDown extends Application {
 
     this.previousRotorValues = this.rotorValues;
   }
+  
+  // override built in "close" method to allow proliferation of close behaviour to player clients
+  close(){
+    if(game.user.isGM) {
+        this.closeClients();
+    } else {
+        this.closeTimer();
+    }
+  }
+
+  closeTimer() {
+    clearInterval(this._timerInterval);
+    super.close(this);
+  }
 }
 
 function rotorTopFlip() {
@@ -357,6 +418,10 @@ function setEndMessage(showMessage) {
   if(showMessage) {
     playEndSound(this._endSound, this._endSoundPath, true);
     hideFormElements(true, [this._pauseId]);
+
+    if(this._closeAtEnd) {
+      this.closeTimer();
+    }
   }  
 }
 

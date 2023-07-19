@@ -1,4 +1,4 @@
-import { hideFormElements, playEndSound } from "./tools.js";
+import { hideFormElements, playEndSound, restartCssAnimation } from "./tools.js";
 
 export class Hourglass extends Application {
 
@@ -24,7 +24,6 @@ export class Hourglass extends Application {
             ev.preventDefault();
         };
 
-
         this._id = options.id;
         this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
         this._canvasId = `hourglass-canvas-${this._id}`;
@@ -34,6 +33,7 @@ export class Hourglass extends Application {
         this._durationIncrementDecrease = `hourglass-decrease-${this._id}`;
         this._durationIncrementIncrease = `hourglass-increase-${this._id}`;
         this._pauseId = `hourglass-pause-${this._id}`;
+        this._restartId = `hourglass-restart-${this._id}`;
         this._hourglassDripId = `hourglass-drip-${this._id}`;
         
         this._title = options.title;
@@ -43,9 +43,12 @@ export class Hourglass extends Application {
         this._endMessage = options.endMessage;
         this._endSound = options.endSound;
         this._endSoundPath = options.endSoundPath;
+        this._closeAtEnd = options.closeAtEnd;
         this._textScale = 1;
 
         this._paused = false;
+
+        this._timerInterval;
 
         switch(options.size) {
             case "tiny":
@@ -88,6 +91,8 @@ export class Hourglass extends Application {
         this._durationType = options.durationType;
         this._durationIncrements = options.durationIncrements;
         this._duration = options.durationSeconds + (options.durationMinutes * 60);
+
+        this.closeApplication
     }
     
     getData() { 
@@ -101,6 +106,7 @@ export class Hourglass extends Application {
           durationIncrementDecrease: this._durationIncrementDecrease,
           durationIncrementIncrease: this._durationIncrementIncrease,
           pauseId: this._pauseId,
+          restartId: this._restartId,
           hourglassDripId: this._hourglassDripId
         };
     }
@@ -130,15 +136,18 @@ export class Hourglass extends Application {
                 document.getElementById(this._pauseId).onclick = () => {
                     this.pauseClients();
                 };
+                document.getElementById(this._restartId).onclick = () => {
+                    this.restartClients();
+                };
             } else {
-                hideFormElements(true, [this._pauseId]);
+                hideFormElements(true, [this._pauseId, this._restartId]);
             } 
 
-            this.showTimeAsText();
+            this.pauseTimer(this._paused);
         } else {
             var styleElem = document.head.appendChild(document.createElement("style"));
             styleElem.innerHTML = `#${this._hourglassTopId}:before {animation: none;} #${this._hourglassBottomId}:before {animation: none;}`;
-            hideFormElements(true, [this._hourglassDripId, this._pauseId]);
+            hideFormElements(true, [this._hourglassDripId, this._pauseId, this._restartId]);
 
             if(game.user.isGM) {
                 document.getElementById(this._durationIncrementDecrease).onclick = () => {
@@ -149,7 +158,7 @@ export class Hourglass extends Application {
                 };    
                 document.getElementById(this._durationIncrementDecrease).disabled = true;
             } else {
-                hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId]);
+                hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId, this._restartId]);
             }            
 
             if(this._timeAsText) {
@@ -197,25 +206,32 @@ export class Hourglass extends Application {
         canvasElement.style.setProperty('--translate-bottom-sand', sandTranslation + "%");
     }
 
-    pauseTimer(pause) {
-        this._paused = pause;
-
-        let canvasElement = document.getElementById(this._canvasId);
-        canvasElement.style.setProperty('--animationPlayState', this._paused ? 'paused' : 'running');
-
-        const buttonIcon = this._paused ? 'play' : 'pause';
-        const buttonText = this._paused ? 'Resume' : 'Pause';
-
-        document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
-
-        const remainingTimeElement = document.getElementById(this._remainingTimeId);
-
-        if(pause) {
-            remainingTimeElement.innerText += " (Paused)";
-        } else {
-            remainingTimeElement.innerText = "";
-        }
+    pauseTimer(paused) {
+        this._paused = paused;
         
+        let canvasElement = document.getElementById(this._canvasId);
+
+        if(!!canvasElement) {
+            canvasElement.style.setProperty('--animationPlayState', this._paused ? 'paused' : 'running');
+
+            const buttonIcon = this._paused ? 'play' : 'pause';
+            const buttonText = this._paused ? 'Resume' : 'Pause';
+    
+            document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
+        
+            if(this._timeAsText) {
+                this.displayRemainingTime();
+            } else {
+                const remainingTimeElement = document.getElementById(this._remainingTimeId);
+                remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+            }
+        }        
+        
+        if(this._paused) {
+            clearInterval(this._timerInterval);
+        } else {
+            this.startTimerCountdown();
+        }
     }
 
     pauseClients() {
@@ -232,6 +248,51 @@ export class Hourglass extends Application {
         Hooks.call('pauseHourglass', pauseOptions);
     }
 
+    restartTimer() {
+        if(game.user.isGM) {
+            hideFormElements(false, [this._pauseId]);
+        }
+        
+        clearInterval(this._timerInterval);
+
+        this._elapsedTime = 0;
+
+        if(this._timeAsText) {
+            this.displayRemainingTime();
+        } else {
+            const remainingTimeElement = document.getElementById(this._remainingTimeId);
+            remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+        }
+
+        restartCssAnimation(this._hourglassTopId, "top");
+        restartCssAnimation(this._hourglassBottomId, "bottom");
+        restartCssAnimation(this._hourglassDripId, "drip");
+        
+        this.pauseTimer(this._paused);     
+    }
+
+    restartClients() {
+        const restartOptions = {
+            id: this._id,
+            timerType: 'hourglass'
+        };
+
+        game.socket.emit('module.hourglass', { type:'restart', options: restartOptions });
+
+        Hooks.call('restartHourglass', restartOptions);
+    }
+
+    closeClients() {
+        const closeOptions = {
+            id: this._id,
+            timerType: 'hourglass'
+        };
+
+        game.socket.emit('module.hourglass', { type:'close', options: closeOptions });
+
+        Hooks.call('closeHourglass', closeOptions);
+    }
+
     incrementClients(value) {
         const incrementOptions = {
             id: this._id,
@@ -244,41 +305,50 @@ export class Hourglass extends Application {
         Hooks.call('incrementHourglass', incrementOptions);
     }
 
-    showTimeAsText() {
-        const timerInterval = setInterval(() => {
-            if(!this._paused) {
-                this._elapsedTime++;
+    startTimerCountdown() {
+        this._timerInterval = setInterval(() => {
+            this._elapsedTime++;
 
-                const expired = this._duration <= this._elapsedTime;
-    
+            const expired = this._duration <= this._elapsedTime;
+
+            if(this._timeAsText) {
+                this.displayRemainingTime();
+            }
+
+            if(expired) {
+                clearInterval(this._timerInterval);
+
                 const remainingTimeElement = document.getElementById(this._remainingTimeId);
-    
-                if(this._timeAsText) {
-                    const remainingTime = this._duration - this._elapsedTime;
-    
-                    const displayTime = this.formatTimeForDisplay(remainingTime);
-    
-                    // Check the window is still open
-                    if(!!remainingTimeElement){
-                        remainingTimeElement.innerText = displayTime;
-                    } else {
-                        clearInterval(timerInterval);
-                    }
-                }
-    
-                if(expired) {
-                    clearInterval(timerInterval);
-    
-                    if(!!this._endMessage && !!remainingTimeElement) {
-                        remainingTimeElement.innerText = this._endMessage;
-                    }
-
-                    hideFormElements(true, [this._pauseId]);
-    
+                if(!!this._endMessage && !!remainingTimeElement) {
+                    remainingTimeElement.innerText = this._endMessage;
                     playEndSound(this._endSound, this._endSoundPath, true);
+                }
+
+                hideFormElements(true, [this._pauseId]);
+
+                if(this._closeAtEnd) {
+                    this.closeTimer();
                 }
             }
         }, 1000);
+    }
+
+    displayRemainingTime() {
+        const remainingTimeElement = document.getElementById(this._remainingTimeId);
+        const remainingTime = this._duration - this._elapsedTime;
+
+        let displayTime = this.formatTimeForDisplay(remainingTime);
+
+        if(this._paused) {
+            displayTime += " (Paused)";
+        }
+
+        // Check the window is still open
+        if(!!remainingTimeElement){
+            remainingTimeElement.innerText = displayTime;     
+        } else {
+            clearInterval(this._timerInterval);
+        }
     }
 
     formatTimeForDisplay(time) {        
@@ -304,5 +374,19 @@ export class Hourglass extends Application {
         }
 
         return displayTime;
+    }    
+
+    // override built in "close" method to allow proliferation of close behaviour to player clients
+    close(){
+        if(game.user.isGM) {
+            this.closeClients();
+        } else {
+            this.closeTimer();
+        }
+    }
+
+    closeTimer() {
+        clearInterval(this._timerInterval);
+        super.close(this);
     }
 }
