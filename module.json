@@ -8,7 +8,7 @@
   }],
   "version": "This is auto replaced",
   "compatibility": {
-    "minimum": "0.8.0",
+    "minimum": "11",
     "verified": "11"
   },
   "esmodules": ["scripts/main.js"],
