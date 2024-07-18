@@ -44,7 +44,7 @@ export class HourglassGui extends FormApplication {
   };
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ['hourglass-gui'],
       popOut: true,
       template: './modules/hourglass/templates/hourglass-gui.html',
