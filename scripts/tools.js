@@ -30,7 +30,7 @@ export const playEndSound = (endSound, endSoundPath, global) => {
                     
       const soundPath = endSound === 'custom' ? endSoundPath : `./modules/hourglass/sounds/${endSound}.mp3`;
       
-      AudioHelper.play({
+      foundry.audio.AudioHelper.play({
         src: soundPath,
         volume: 1.0,
         autoplay: true,
