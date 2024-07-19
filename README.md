@@ -1,10 +1,10 @@
 # Foundry Hourglass
 
 ![Latest Release Download Count](https://img.shields.io/badge/dynamic/json?label=Downloads%20(Latest)&query=assets%5B0%5D.download_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2FOctarines%2FFoundryHourglass%2Freleases%2Flatest)
-![Latest Release Download Count](https://img.shields.io/github/downloads/octarines/foundryhourglass/total?color=blue&label=Downloads%20%28Total%29)
+![Latest Release Download Count](https://img.shields.io/github/downloads/octarines/foundryhourglass/total?color=purple&label=Downloads%20%28Total%29)
 ![Hourglass Latest Version](https://img.shields.io/github/v/release/octarines/foundryhourglass?color=yellow&label=Latest%20Version)
 ![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fhourglass&colorB=4aa94a)
-![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FOctarines%2FFoundryHourglass%2Fmain%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange)
+![Foundry Verified Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2FOctarines%2FFoundryHourglass%2Fmain%2Fmodule.json&label=Foundry%20Version&query=$.compatibility.verified&colorB=orange)
 
 Configurable animated graphical timers & round trackers for foundry VTT that can be shown by the GM to all players.
 
@@ -125,9 +125,28 @@ The timer can be restarted at any time, including after the duration is expired 
 If a player has closed their timer window, the restart will also have the added effect of redisplaying it for them.
 
 ## Closing the Timer
-From version 1.7.0 of the Hourglass module, closing a timer window as a user with GM role will also close that timer for all other players. 
+Closing a timer window as a user with GM role will also close that timer for all other players. 
 
 Pressing the "close" button as a non-GM user will still only close the window for yourself.
+
+## Macro Support
+From version 1.9 the ability to show and start Hourglass timer windows from macros has been introduced. 
+
+To access the new hourglass API, enter the following line as a **Script**:
+
+`game.modules.get('hourglass').api`
+
+The following methods are available:
+
++ **`showTimer(duration: number)`** - Displays and starts a default hourglass with the entered duration.
++ **`showTimerPreset(presetTitle: string, duration: number = null)`** - Displays and starts a previously saved preset timer with the matching title property. The duration for the preset timer can be overridden by entering a duration (in seconds) into the second optional parameter. For countdown timers, this property is set as the "duration seconds". For manual timers, this property is set as the "increments".
++ **`closeAllTimers()`** - Closes all open timers for all players.
+
+As the Hourglass module is limited to use by GM and Assistant GM users, non-GM players will not have access to call these API methods.
+
+### Example Usage:
+
+![Hourglass Timer Resume][13]
 
 ## Popout!
 The Popout! module is disabled for Hourglass Timer windows due to compatibility issues.
@@ -144,3 +163,4 @@ The Popout! module is disabled for Hourglass Timer windows due to compatibility 
 [10]: demo/hourglass-pause.png
 [11]: demo/hourglass-paused.png
 [12]: demo/hourglass-restart.png
+[13]: demo/hourglass-macro-examples.png

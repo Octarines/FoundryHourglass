@@ -1,9 +1,11 @@
 import { addHourglassControl } from './controls.js'
+import { initialiseHourglassMacros } from './macros.js'
 import { Hourglass } from "./hourglass.js";
 import { FlipDown } from "./flipdown.js";
 
 Hooks.on("init", async () => {
   addHourglassControl(controls);
+  initialiseHourglassMacros();
 });
 
 Hooks.on("setup", async() => {
@@ -33,7 +35,7 @@ Hooks.once("ready", () => {
         Hooks.call('restartHourglass', options.options); 
         break;
       case 'close':
-        Hooks.call('closeHourglass', options.options); 
+        Hooks.call('closeHourglass', options.options);
         break;
     }
   });
