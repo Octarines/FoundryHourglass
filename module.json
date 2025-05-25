@@ -8,7 +8,7 @@
   "version": "This is auto replaced",
   "compatibility": {
     "minimum": "10",
-    "verified": "12"
+    "verified": "13"
   },
   "esmodules": ["scripts/main.js"],
   "socket": true,
