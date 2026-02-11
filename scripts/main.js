@@ -4,7 +4,7 @@ import { Hourglass } from "./hourglass.js";
 import { FlipDown } from "./flipdown.js";
 
 Hooks.on("init", async () => {
-  addHourglassControl(controls);
+  addHourglassControl();
   initialiseHourglassMacros();
 });
 
