@@ -44,10 +44,14 @@ Hooks.once("ready", () => {
 Hooks.on("showHourglass", async (options) => {
   switch(options.timerType) {
     case 'flipdown':
-      FlipDown.timers.push({ id: options.id, timer: new FlipDown(options).render(true) });
+      const flipdownTimer = new FlipDown(options);
+      await flipdownTimer.render({ force: true });
+      FlipDown.timers.push({ id: options.id, timer: flipdownTimer });
       break;
     default:
-      Hourglass.timers.push({ id: options.id, timer: new Hourglass(options).render(true) });
+      const hourglassTimer = new Hourglass(options);
+      await hourglassTimer.render({ force: true });
+      Hourglass.timers.push({ id: options.id, timer: hourglassTimer });
   }
 })
 
@@ -87,7 +91,7 @@ Hooks.on("restartHourglass", async (options) => {
     if(timer.rendered) {
       timer.restartTimer();
     } else {
-      timer.render(true);
+      timer.render();
     }
   }
 })

@@ -1,8 +1,8 @@
 .hourglass {
-  height: 600;
-  width: 350;
   margin: 0;
   box-shadow: none;
+  min-width: 0 !important;
+  min-height: 0 !important;
 }
 
 .hourglass .window-content {
@@ -76,7 +76,7 @@
 .hourglass-controls {
   position: absolute;
   top: 0;
-  right: 0;
+  right: calc((var(--scale) - 1) * 30px);
   display: flex;
   flex-direction: row;
 }

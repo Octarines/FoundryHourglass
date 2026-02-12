@@ -1,26 +1,19 @@
 import { hideFormElements, playEndSound } from "./tools.js";
 
-export class FlipDown extends Application {
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
+
+export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
 
   _disable_popout_module = true;
 
   static timers = [];
 
-  constructor(options) {
-    super(
-      {
-        id:`hourglass-${options.id}`,
-        title: options.title,
-        classes:['flipdownbody'],
-        popOut: true,
-        template: './modules/hourglass/templates/flipdown.html'
-      }
-    );
-
-    // default minimise/restore functionality currently breaks the hourglass instance window so has been disabled for now
-    this._onToggleMinimize = async function(ev) {
-      ev.preventDefault();
-    };
+  constructor(options = {}) {
+    // Ensure id is a string for ApplicationV2
+    if (options.id !== undefined) {
+      options.id = String(options.id);
+    }
+    super(options);
 
     this._id = options.id;
     this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
@@ -59,73 +52,118 @@ export class FlipDown extends Application {
     switch(options.size) {
       case "tiny":
         {
-          this._height = "100px";
-          this._width = "160px";
-          this._scale = 0.18;
+          this._height = 100;
+          this._width = 160;
+          this._scale = 0.08;
           this._messageScale = 0.5;
           break;
         }
       case "small":
         {
-          this._height = "150px";
-          this._width = "280px";
-          this._scale = 0.4;
+          this._height = 150;
+          this._width = 280;
+          this._scale = 0.3;
           this._messageScale = 0.6;
           break;
         }
       case "medium":
         {
-          this._height = "225px";
-          this._width = "480px";
+          this._height = 225;
+          this._width = 480;
           this._scale = 0.7;
           this._messageScale = 0.8;
           break;
         }
       case "large":
         {
-          this._height = "300px";
-          this._width = "640px";
-          this._scale = 1;
+          this._height = 300;
+          this._width = 640;
+          this._scale = 0.9;
           this._messageScale = 1;
           break;
         }
       default: 
         {
-          this._height = "300px";
-          this._width = "640px";
+          this._height = 300;
+          this._width = 640;
           this._scale = 1;
           this._messageScale = 1;
           break;
         }
     }    
   }
-  
-  getData() { 
-      return {
-        canvasId: `hourglass-canvas-${this._id}`,
-        remainingTimeId: `hourglass-remaining-time-${this._id}`,
-        durationIncrementDecrease: this._durationIncrementDecrease,
-        durationIncrementIncrease: this._durationIncrementIncrease,
-        pauseId: this._pauseId,
-        restartId: this._restartId
-      };
+
+  static DEFAULT_OPTIONS = {
+    classes: ['flipdownbody'],
+    window: {
+      title: '',
+      minimizable: false
+    },
+    position: {
+      width: 'auto',
+      height: 'auto'
+    }
+  };
+
+  static PARTS = {
+    window: {
+      template: './modules/hourglass/templates/flipdown.html'
+    }
+  };
+
+  get title() {
+    return this._title;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
+  get id() {
+    return `hourglass-${this._id}`;
+  }
 
-    this.flipdownElement = document.getElementById(this._canvasId);
+  _configureRenderOptions(options) {
+    super._configureRenderOptions(options);
+
+    if (!!this.id) {
+      options.id = this.id;
+    } 
+
+    options.window ??= {};
+    if (!!this.title) {
+      options.window.title = this.title;
+    }
+
+    options.position ??= {};
+    options.position.width = this._width;
+    options.position.height = this._height;
+  }
+  
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    return {
+      ...context,
+      canvasId: `hourglass-canvas-${this._id}`,
+      remainingTimeId: `hourglass-remaining-time-${this._id}`,
+      durationIncrementDecrease: this._durationIncrementDecrease,
+      durationIncrementIncrease: this._durationIncrementIncrease,
+      pauseId: this._pauseId,
+      restartId: this._restartId
+    };
+  }
+
+  _onRender(context, options) {
+    super._onRender(context, options);
+
+    this.flipdownElement = this.element.querySelector(`#${this._canvasId}`);
 
     this.initialiseTimer();
   }
 
   initialiseTimer () {
-    let windowElement = document.getElementById(this._windowId);
-        windowElement.style.setProperty('height', this._height);
-        windowElement.style.setProperty('width', this._width);
-        windowElement.style.setProperty('--scale', this._scale);
-        windowElement.style.setProperty('--messageScale', this._messageScale);
-        windowElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`)
+    // Set CSS variables on the application element
+    if (this.element) {
+      this.element.style.setProperty('--scale', this._scale);
+      this.element.style.setProperty('--messageScale', this._messageScale);
+      this.element.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`);
+    }
 
     this.createRotors();
 
@@ -135,12 +173,10 @@ export class FlipDown extends Application {
       hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
 
       if(game.user.isGM) {
-        document.getElementById(this._pauseId).onclick = () => {
-            this.pauseClients();
-        };
-        document.getElementById(this._restartId).onclick = () => {
-          this.restartClients();
-        };
+        const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
+        const restartBtn = this.element.querySelector(`#${this._restartId}`);
+        if (pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
+        if (restartBtn) restartBtn.onclick = () => { this.restartClients(); };
       } else {
           hideFormElements(true, [this._pauseId, this._restartId]);
       }
@@ -155,12 +191,10 @@ export class FlipDown extends Application {
       this.updateClockValues(this._durationIncrements, true, true);
 
       if(game.user.isGM) {
-          document.getElementById(this._durationIncrementDecrease).onclick = () => {
-              this.incrementClients(-1)
-          };
-          document.getElementById(this._durationIncrementIncrease).onclick = () => {
-              this.incrementClients(1)
-          };
+          const decreaseBtn = this.element.querySelector(`#${this._durationIncrementDecrease}`);
+          const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
+          if (decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
+          if (increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
       } else {
           hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
       }          
@@ -185,7 +219,8 @@ export class FlipDown extends Application {
     this._elapsedTime += value;
     const expired = this._durationIncrements <= this._elapsedTime;
 
-    document.getElementById(this._durationIncrementIncrease).disabled = expired;
+    const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
+    if (increaseBtn) increaseBtn.disabled = expired;
 
     const remainingIncrements = this._durationIncrements - this._elapsedTime;
   
@@ -195,14 +230,15 @@ export class FlipDown extends Application {
   pauseTimer(paused) {
     this._paused = paused;
 
-    const remainingTimeElement = document.getElementById(this._remainingTimeId);    
+    const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);    
     if(!!remainingTimeElement) {
       remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
 
       const buttonIcon = this._paused ? 'play' : 'pause';
       const buttonText = this._paused ? 'Resume' : 'Pause';
 
-      document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;      
+      const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
+      if (pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;      
     }
 
     if(this._paused) {
@@ -238,8 +274,8 @@ export class FlipDown extends Application {
     this.updateClockValues(this._duration, false);
     this.updateClockValues(this._duration, true);
 
-    const remainingTimeElement = document.getElementById(this._remainingTimeId);
-    remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+    const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+    if (remainingTimeElement) remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
     
     this.pauseTimer(this._paused);      
   }
@@ -407,7 +443,7 @@ function rotorLeafRearFlip(remainingTime, animate) {
 }
 
 function setEndMessage(showMessage) {
-  const remainingTimeElement = document.getElementById(this._remainingTimeId);
+  const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
   
   if(!!this._endMessage && !!remainingTimeElement && showMessage) {
     remainingTimeElement.innerText = this._endMessage;
