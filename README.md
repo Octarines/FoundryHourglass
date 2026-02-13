@@ -158,7 +158,7 @@ The Popout! module is disabled for Hourglass Timer windows due to compatibility 
 [5]: demo/hourglass-options-presets.PNG
 [6]: demo/flipdown.PNG
 [7]: demo/hourglass-manual.PNG
-[8]: demo/hourglass-menu.jpg
+[8]: demo/hourglass-menu.PNG
 [9]: demo/hourglass-options-sound.PNG
 [10]: demo/hourglass-pause.png
 [11]: demo/hourglass-paused.png
