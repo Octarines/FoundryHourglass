@@ -1,28 +1,19 @@
 import { hideFormElements, playEndSound, restartCssAnimation } from "./tools.js";
 
-export class Hourglass extends Application {
+const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
+
+export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
 
     _disable_popout_module = true;
 
     static timers = [];
 
-    constructor(options) {
-
-        super(
-            {
-                id:`hourglass-${options.id}`,
-                title: options.title,
-                classes:['hourglass'],
-                popOut: true,
-                template: './modules/hourglass/templates/hourglass.html'
-            }
-        );
-
-
-        // default minimise/restore functionality currently breaks the hourglass instance window so has been disabled for now
-        this._onToggleMinimize = async function(ev) {
-            ev.preventDefault();
-        };
+    constructor(options = {}) {
+        // Ensure id is a string for ApplicationV2
+        if (options.id !== undefined) {
+            options.id = String(options.id);
+        }
+        super(options);
 
         this._id = options.id;
         this._remainingTimeId = `hourglass-remaining-time-${this._id}`;
@@ -44,45 +35,46 @@ export class Hourglass extends Application {
         this._endSound = options.endSound;
         this._endSoundPath = options.endSoundPath;
         this._closeAtEnd = options.closeAtEnd;
+        this._syncFoundryPause = options.syncWithFoundryPause;
         this._textScale = 1;
 
-        this._paused = false;
+        this._paused = this._syncFoundryPause ? game.paused : false;
 
         this._timerInterval;
 
         switch(options.size) {
             case "tiny":
                 {
-                    this._height = "170px";
-                    this._width = "100px";
+                    this._height = 170;
+                    this._width = 100;
                     this._scale = 0.5;
                     break;
                 }
             case "small":
                 {
-                    this._height = "340px";
-                    this._width = "200px";
+                    this._height = 340;
+                    this._width = 200;
                     this._scale = 0.6;
                     break;
                 }
             case "medium":
                 {
-                    this._height = "460px";
-                    this._width = "270px";
+                    this._height = 460;
+                    this._width = 270;
                     this._scale = 0.8;
                     break;
                 }
             case "large":
                 {
-                    this._height = "600px";
-                    this._width = "350px";
+                    this._height = 600;
+                    this._width = 350;
                     this._scale = 1;
                     break;
                 }
             default: 
                 {
-                    this._height = "600px";
-                    this._width = "350px";
+                    this._height = 600;
+                    this._width = 350;
                     this._scale = 1;
                     break;
                 }
@@ -92,40 +84,84 @@ export class Hourglass extends Application {
         this._durationIncrements = options.durationIncrements;
         this._duration = options.durationSeconds + (options.durationMinutes * 60);
 
-        this.closeApplication
+        this.closeApplication;
+    }
+
+    static DEFAULT_OPTIONS = {
+        classes: ['hourglass'],
+        window: {
+            title: '',
+            minimizable: false,
+            resizable: false
+        },
+        position: {
+            width: 'auto',
+            height: 'auto'
+        }
+    };
+
+    static PARTS = {
+        window: {
+            template: './modules/hourglass/templates/hourglass.html'
+        }
+    };
+
+    get title() {
+        return this._title;
+    }
+
+    get id() {
+        return `hourglass-${this._id}`;
+    }
+
+    _configureRenderOptions(options) {
+        super._configureRenderOptions(options);
+
+        if (!!this.id) {
+            options.id = this.id;
+        } 
+
+        options.window ??= {};
+        if (!!this.title) {
+            options.window.title = this.title;
+        }
+
+        options.position ??= {};
+        options.position.width = this._width;
+        options.position.height = this._height;
     }
     
-    getData() { 
+    async _prepareContext(options) {
+        const context = await super._prepareContext(options);
         return {
-          duration: this._timeAsText ? this.formatTimeForDisplay(this._duration) : '',
-          sandColour: '#EDD0AA',
-          remainingTimeId: this._remainingTimeId,
-          canvasId: this._canvasId,
-          hourglassTopId: this._hourglassTopId,
-          hourglassBottomId: this._hourglassBottomId,
-          durationIncrementDecrease: this._durationIncrementDecrease,
-          durationIncrementIncrease: this._durationIncrementIncrease,
-          pauseId: this._pauseId,
-          restartId: this._restartId,
-          hourglassDripId: this._hourglassDripId
+            ...context,
+            duration: this._timeAsText ? this.formatTimeForDisplay(this._duration) : '',
+            sandColour: '#EDD0AA',
+            remainingTimeId: this._remainingTimeId,
+            canvasId: this._canvasId,
+            hourglassTopId: this._hourglassTopId,
+            hourglassBottomId: this._hourglassBottomId,
+            durationIncrementDecrease: this._durationIncrementDecrease,
+            durationIncrementIncrease: this._durationIncrementIncrease,
+            pauseId: this._pauseId,
+            restartId: this._restartId,
+            hourglassDripId: this._hourglassDripId
         };
     }
 
-    activateListeners(html) {
-        super.activateListeners(html);
+    _onRender(context, options) {
+        super._onRender(context, options);
         this.initialiseTimer();
     }
 
     initialiseTimer () {
-        let windowElement = document.getElementById(this._windowId);
-        windowElement.style.setProperty('height', this._height);
-        windowElement.style.setProperty('width', this._width);
-
-        let canvasElement = document.getElementById(this._canvasId);
-        canvasElement.style.setProperty('--sand-duration', this._duration + "s");
-        canvasElement.style.setProperty('--sand-color', this._sandColour);
-        canvasElement.style.setProperty('--scale', this._scale);
-        canvasElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`)
+        let canvasElement = this.element.querySelector(`#${this._canvasId}`);
+        if (canvasElement) {
+            canvasElement.style.setProperty('--sand-duration', this._duration + "s");
+            canvasElement.style.setProperty('--sand-color', this._sandColour);
+            canvasElement.style.setProperty('--scale', this._scale);
+            canvasElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`);
+        }
 
         this._elapsedTime = 0;
 
@@ -133,15 +169,17 @@ export class Hourglass extends Application {
             hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
 
             if(game.user.isGM) {
-                document.getElementById(this._pauseId).onclick = () => {
-                    this.pauseClients();
-                };
-                document.getElementById(this._restartId).onclick = () => {
-                    this.restartClients();
-                };
+                const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
+                const restartBtn = this.element.querySelector(`#${this._restartId}`);
+                if (!!pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
+                if (!!restartBtn) restartBtn.onclick = () => { this.restartClients(); };
             } else {
                 hideFormElements(true, [this._pauseId, this._restartId]);
             } 
+
+            if(this._syncFoundryPause) {
+                hideFormElements(true, [this._pauseId]);
+            }
 
             this.pauseTimer(this._paused);
         } else {
@@ -150,20 +188,18 @@ export class Hourglass extends Application {
             hideFormElements(true, [this._hourglassDripId, this._pauseId, this._restartId]);
 
             if(game.user.isGM) {
-                document.getElementById(this._durationIncrementDecrease).onclick = () => {
-                    this.incrementClients(-1);
-                };
-                document.getElementById(this._durationIncrementIncrease).onclick = () => {
-                    this.incrementClients(1);
-                };    
-                document.getElementById(this._durationIncrementDecrease).disabled = true;
+                const decreaseBtn = this.element.querySelector(`#${this._durationIncrementDecrease}`);
+                const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
+                if (!!decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
+                if (!!increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
+                if (!!decreaseBtn) decreaseBtn.disabled = true;
             } else {
                 hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId, this._restartId]);
             }            
 
             if(this._timeAsText) {
-                const remainingTimeElement = document.getElementById(this._remainingTimeId);
-                remainingTimeElement.innerText = this._durationIncrements;
+                const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+                if (!!remainingTimeElement) remainingTimeElement.innerText = this._durationIncrements;
             }            
         }
     }
@@ -173,7 +209,7 @@ export class Hourglass extends Application {
 
         const remainingIncrements = this._durationIncrements - this._elapsedTime;
         const expired = this._durationIncrements <= this._elapsedTime;
-        const remainingTimeElement = document.getElementById(this._remainingTimeId);
+        const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
 
         if(this._timeAsText) {
             const displayTime = remainingIncrements;
@@ -196,20 +232,24 @@ export class Hourglass extends Application {
             playEndSound(this._endSound, this._endSoundPath, true);
         }
 
-        document.getElementById(this._durationIncrementIncrease).disabled = expired;
-        document.getElementById(this._durationIncrementDecrease).disabled = this._elapsedTime == 0;
+        const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
+        const decreaseBtn = this.element.querySelector(`#${this._durationIncrementDecrease}`);
+        if (increaseBtn) increaseBtn.disabled = expired;
+        if (decreaseBtn) decreaseBtn.disabled = this._elapsedTime == 0;
 
         const sandTranslation = ( remainingIncrements / this._durationIncrements ) * 100;
 
-        let canvasElement = document.getElementById(this._canvasId);
-        canvasElement.style.setProperty('--translate-top-sand', 100 - sandTranslation + "%");
-        canvasElement.style.setProperty('--translate-bottom-sand', sandTranslation + "%");
+        let canvasElement = this.element.querySelector(`#${this._canvasId}`);
+        if (canvasElement) {
+            canvasElement.style.setProperty('--translate-top-sand', 100 - sandTranslation + "%");
+            canvasElement.style.setProperty('--translate-bottom-sand', sandTranslation + "%");
+        }
     }
 
     pauseTimer(paused) {
         this._paused = paused;
         
-        let canvasElement = document.getElementById(this._canvasId);
+        let canvasElement = this.element.querySelector(`#${this._canvasId}`);
 
         if(!!canvasElement) {
             canvasElement.style.setProperty('--animationPlayState', this._paused ? 'paused' : 'running');
@@ -217,13 +257,14 @@ export class Hourglass extends Application {
             const buttonIcon = this._paused ? 'play' : 'pause';
             const buttonText = this._paused ? 'Resume' : 'Pause';
     
-            document.getElementById(this._pauseId).innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
-        
+            const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
+            if (!!pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
+
             if(this._timeAsText) {
                 this.displayRemainingTime();
             } else {
-                const remainingTimeElement = document.getElementById(this._remainingTimeId);
-                remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+                const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+                if (remainingTimeElement) remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
             }
         }        
         
@@ -231,6 +272,12 @@ export class Hourglass extends Application {
             clearInterval(this._timerInterval);
         } else {
             this.startTimerCountdown();
+        }
+    }
+
+    syncTimerPause() {
+        if(this._syncFoundryPause) {
+            this.pauseTimer(game.paused);
         }
     }
 
@@ -249,7 +296,7 @@ export class Hourglass extends Application {
     }
 
     restartTimer() {
-        if(game.user.isGM) {
+        if(game.user.isGM && !this._syncFoundryPause) {
             hideFormElements(false, [this._pauseId]);
         }
         
@@ -260,8 +307,8 @@ export class Hourglass extends Application {
         if(this._timeAsText) {
             this.displayRemainingTime();
         } else {
-            const remainingTimeElement = document.getElementById(this._remainingTimeId);
-            remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
+            const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+            if (remainingTimeElement) remainingTimeElement.innerText = this._paused ? "(Paused)" : "";
         }
 
         restartCssAnimation(this._hourglassTopId, "top");
@@ -318,11 +365,12 @@ export class Hourglass extends Application {
             if(expired) {
                 clearInterval(this._timerInterval);
 
-                const remainingTimeElement = document.getElementById(this._remainingTimeId);
+                const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
                 if(!!this._endMessage && !!remainingTimeElement) {
-                    remainingTimeElement.innerText = this._endMessage;
-                    playEndSound(this._endSound, this._endSoundPath, true);
+                    remainingTimeElement.innerText = this._endMessage;                    
                 }
+
+                playEndSound(this._endSound, this._endSoundPath, true);
 
                 hideFormElements(true, [this._pauseId]);
 
@@ -334,7 +382,7 @@ export class Hourglass extends Application {
     }
 
     displayRemainingTime() {
-        const remainingTimeElement = document.getElementById(this._remainingTimeId);
+        const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
         const remainingTime = this._duration - this._elapsedTime;
 
         let displayTime = this.formatTimeForDisplay(remainingTime);
@@ -387,6 +435,7 @@ export class Hourglass extends Application {
 
     closeTimer() {
         clearInterval(this._timerInterval);
+        Hourglass.timers = Hourglass.timers.filter(x => x.id !== this._id);
         super.close(this);
     }
 }

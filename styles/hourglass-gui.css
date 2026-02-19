@@ -1,6 +1,6 @@
 .hourglass-gui {
     /* height: auto; */
-    /* width: 30em; */
+    min-width: 40em;
 }
 
 .hourglass-gui .hourglass-gui__form {
