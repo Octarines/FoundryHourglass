@@ -31,7 +31,8 @@ This will open the options window for you to configure your hourglass.
 + **Display time as text?** - Indicates whether you wish to display the remaining time as a text overlay on the hourglass.
 + **End message** - Text to be displayed as an overlay on the hourglass after the duration has passed.
 + **End sound** - Sound to be played to all players after the duration has passed (more details below).
-+ **Close after duration?** - Indicates whether you wish the timer window to automatically close (for all users) after the duration has passed.
++ **Close after duration?** - Whether you wish the timer window to automatically close (for all users) after the duration has passed.
++ **Sync with Foundry pause?** - Whether the timer should pause/resume when you pause/resume your Foundry game session (e.g. with space bar)
 
 ## Usage
 
@@ -124,6 +125,17 @@ The timer can be restarted at any time, including after the duration is expired 
 
 If a player has closed their timer window, the restart will also have the added effect of redisplaying it for them.
 
+### Synching with Foundry Pause
+You may sometimes wish for your timers to only countdown while the game is "unpaused".
+
+Maybe a villain’s ritual completes in 3 minutes or a cave will collapse on a party in 30 seconds, the timer should not advance while the GM looks up a rule or adjudicates a spell effct.
+
+By checking the "Sync wiht Foundry pause" option in the timer options, the Pause and Resume buttons will no longer be displayed on the timer controls. Instead the timer will start and stop when the GM pauses or unpauses Foundry. This could include pressing the space bar or using a macro. The pause state of the timer will then match the current state of Foundry i.e. if the game is paused, the timer will be paused.
+
+*NB, The space bar is also the default button for "submitting" a form in FoundryVTT. This means that if you press the space bar while the Hourglass options screen is selected, rather than pausing Foundry, it will instead start a new hourglass with current settings.*
+
+![Hourglass Timer Resume][14]
+
 ## Closing the Timer
 Closing a timer window as a user with GM role will also close that timer for all other players. 
 
@@ -164,3 +176,4 @@ The Popout! module is disabled for Hourglass Timer windows due to compatibility 
 [11]: demo/hourglass-paused.png
 [12]: demo/hourglass-restart.png
 [13]: demo/hourglass-macro-examples.png
+[14]: demo/hourglass-paused-sync.png

@@ -43,7 +43,8 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
     endMessage: "",
     endSound: "",
     endSoundPath: "",
-    closeAtEnd: false
+    closeAtEnd: false,
+    syncWithFoundryPause: false
   };
 
   static DEFAULT_OPTIONS = {
@@ -113,6 +114,7 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
     // slight hack for checkbox and select dropdown initial value binding
     this.element.querySelector("#hourglassTimeAsText").checked = HourglassGui.hourGlassDefaultOptions.timeAsText;
     this.element.querySelector("#hourglassCloseAtEnd").checked = HourglassGui.hourGlassDefaultOptions.closeAtEnd;
+    this.element.querySelector("#hourglassSyncWithFoundryPause").checked = HourglassGui.hourGlassDefaultOptions.syncWithFoundryPause;
 
     setSelectedValue("hourglassSize", HourglassGui.hourGlassDefaultOptions.size);
     setSelectedValue("endSound", HourglassGui.hourGlassDefaultOptions.endSound);
@@ -148,6 +150,7 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
       size,
       timeAsText,
       closeAtEnd,
+      syncWithFoundryPause,
       sandColour,
       endMessage,
       timerType,
@@ -165,6 +168,7 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
       size: size,
       timeAsText: timeAsText,
       closeAtEnd: closeAtEnd,
+      syncWithFoundryPause: syncWithFoundryPause,
       sandColour: sandColour,
       endMessage: endMessage,
       timerType: timerType,
@@ -273,6 +277,7 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
       setSelectedValue("hourglassSize", selectedOptions.size === undefined ? "large" : selectedOptions.size);
       setSelectedValue("endSound", selectedOptions.endSound === undefined ? "" : selectedOptions.endSound);
       this.element.querySelector("#hourglassCloseAtEnd").checked = selectedOptions.closeAtEnd ?? false;
+      this.element.querySelector("#hourglassSyncWithFoundryPause").checked = selectedOptions.syncWithFoundryPause ?? false;
     }
 
     this.refreshPresetButtons();
@@ -311,6 +316,7 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
       sandColour: this.element.querySelector("#hourglassColourText").value,
       timeAsText: this.element.querySelector("#hourglassTimeAsText").checked,
       closeAtEnd: this.element.querySelector("#hourglassCloseAtEnd").checked,
+      syncWithFoundryPause: this.element.querySelector("#hourglassSyncWithFoundryPause").checked,
       endMessage: this.element.querySelector("#hourglassEndMessage").value,
       endSound: this.element.querySelector("#endSound").value,
       endSoundPath: this.element.querySelector("#endSoundPath").value
@@ -409,9 +415,11 @@ export class HourglassGui extends HandlebarsApplicationMixin(ApplicationV2) {
     if(durationSelect.value === "timed") {
       hideFormElements(false, ["hourglassDurationSecondsContainer", "hourglassDurationMinutesContainer", "hourglassTimeAsTextLabel"]);
       hideFormElements(true, ["hourglassDurationIncrementsContainer", "hourglassIncrementsAsTextLabel"]);
+      hideFormElements(false, ["hourglassSyncWithFoundryPauseContainer"]);
     } else {
       hideFormElements(true, ["hourglassDurationSecondsContainer", "hourglassDurationMinutesContainer", "hourglassTimeAsTextLabel"]);
       hideFormElements(false, ["hourglassDurationIncrementsContainer", "hourglassIncrementsAsTextLabel"]);
+      hideFormElements(true, ["hourglassSyncWithFoundryPauseContainer"]);
     }
   }
 

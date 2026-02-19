@@ -25,23 +25,21 @@ export const hideFormElements = (hideElements, formElementIds) => {
 }
 
 export const playEndSound = (endSound, endSoundPath, global) => {
-  if(game.user.isGM) {
-    if(!!endSound && !!endSound.length) {
-                    
-      const soundPath = endSound === 'custom' ? endSoundPath : `./modules/hourglass/sounds/${endSound}.mp3`;
-      
-      foundry.audio.AudioHelper.play({
-        src: soundPath,
-        volume: 1.0,
-        autoplay: true,
-        loop: false},
-        global)
-        .then(result => {
-          if(result.failed) {
-            ui.notifications.warn(`Valid audio file could not be found at path ${soundPath}`);
-          }
-        });
-    }
+  if(!!endSound && !!endSound.length) {
+                  
+    const soundPath = endSound === 'custom' ? endSoundPath : `./modules/hourglass/sounds/${endSound}.mp3`;
+    
+    foundry.audio.AudioHelper.play({
+      src: soundPath,
+      volume: 1.0,
+      autoplay: true,
+      loop: false},
+      global)
+      .then(result => {
+        if(result.failed) {
+          ui.notifications.warn(`Valid audio file could not be found at path ${soundPath}`);
+        }
+      });
   }
 }
 

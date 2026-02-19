@@ -35,9 +35,10 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
         this._endSound = options.endSound;
         this._endSoundPath = options.endSoundPath;
         this._closeAtEnd = options.closeAtEnd;
+        this._syncFoundryPause = options.syncWithFoundryPause;
         this._textScale = 1;
 
-        this._paused = false;
+        this._paused = this._syncFoundryPause ? game.paused : false;
 
         this._timerInterval;
 
@@ -170,11 +171,15 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             if(game.user.isGM) {
                 const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
                 const restartBtn = this.element.querySelector(`#${this._restartId}`);
-                if (pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
-                if (restartBtn) restartBtn.onclick = () => { this.restartClients(); };
+                if (!!pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
+                if (!!restartBtn) restartBtn.onclick = () => { this.restartClients(); };
             } else {
                 hideFormElements(true, [this._pauseId, this._restartId]);
             } 
+
+            if(this._syncFoundryPause) {
+                hideFormElements(true, [this._pauseId]);
+            }
 
             this.pauseTimer(this._paused);
         } else {
@@ -185,16 +190,16 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             if(game.user.isGM) {
                 const decreaseBtn = this.element.querySelector(`#${this._durationIncrementDecrease}`);
                 const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
-                if (decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
-                if (increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
-                if (decreaseBtn) decreaseBtn.disabled = true;
+                if (!!decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
+                if (!!increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
+                if (!!decreaseBtn) decreaseBtn.disabled = true;
             } else {
                 hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease, this._pauseId, this._restartId]);
             }            
 
             if(this._timeAsText) {
                 const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
-                if (remainingTimeElement) remainingTimeElement.innerText = this._durationIncrements;
+                if (!!remainingTimeElement) remainingTimeElement.innerText = this._durationIncrements;
             }            
         }
     }
@@ -253,8 +258,8 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             const buttonText = this._paused ? 'Resume' : 'Pause';
     
             const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
-            if (pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
-        
+            if (!!pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;
+
             if(this._timeAsText) {
                 this.displayRemainingTime();
             } else {
@@ -267,6 +272,12 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             clearInterval(this._timerInterval);
         } else {
             this.startTimerCountdown();
+        }
+    }
+
+    syncTimerPause() {
+        if(this._syncFoundryPause) {
+            this.pauseTimer(game.paused);
         }
     }
 
@@ -285,7 +296,7 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     restartTimer() {
-        if(game.user.isGM) {
+        if(game.user.isGM && !this._syncFoundryPause) {
             hideFormElements(false, [this._pauseId]);
         }
         
@@ -356,9 +367,10 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
 
                 const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
                 if(!!this._endMessage && !!remainingTimeElement) {
-                    remainingTimeElement.innerText = this._endMessage;
-                    playEndSound(this._endSound, this._endSoundPath, true);
+                    remainingTimeElement.innerText = this._endMessage;                    
                 }
+
+                playEndSound(this._endSound, this._endSoundPath, true);
 
                 hideFormElements(true, [this._pauseId]);
 
@@ -423,6 +435,7 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
 
     closeTimer() {
         clearInterval(this._timerInterval);
+        Hourglass.timers = Hourglass.timers.filter(x => x.id !== this._id);
         super.close(this);
     }
 }

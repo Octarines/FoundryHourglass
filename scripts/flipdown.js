@@ -30,6 +30,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
     this._endSound = options.endSound;
     this._endSoundPath = options.endSoundPath;
     this._closeAtEnd = options.closeAtEnd;
+    this._syncFoundryPause = options.syncWithFoundryPause;
 
     this._durationType = options.durationType;
     this._duration = options.durationSeconds + (options.durationMinutes * 60);
@@ -47,7 +48,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
 
     this._textScale = 1;
 
-    this._paused = false;
+    this._paused = this._syncFoundryPause ? game.paused : false;
 
     switch(options.size) {
       case "tiny":
@@ -175,10 +176,14 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
       if(game.user.isGM) {
         const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
         const restartBtn = this.element.querySelector(`#${this._restartId}`);
-        if (pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
-        if (restartBtn) restartBtn.onclick = () => { this.restartClients(); };
+        if (!!pauseBtn) pauseBtn.onclick = () => { this.pauseClients(); };
+        if (!!restartBtn) restartBtn.onclick = () => { this.restartClients(); };
       } else {
           hideFormElements(true, [this._pauseId, this._restartId]);
+      }
+
+      if(this._syncFoundryPause) {
+        hideFormElements(true, [this._pauseId]);
       }
 
       this.updateClockValues(this._duration, false);
@@ -193,8 +198,8 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
       if(game.user.isGM) {
           const decreaseBtn = this.element.querySelector(`#${this._durationIncrementDecrease}`);
           const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
-          if (decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
-          if (increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
+          if (!!decreaseBtn) decreaseBtn.onclick = () => { this.incrementClients(-1); };
+          if (!!increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
       } else {
           hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
       }          
@@ -220,7 +225,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
     const expired = this._durationIncrements <= this._elapsedTime;
 
     const increaseBtn = this.element.querySelector(`#${this._durationIncrementIncrease}`);
-    if (increaseBtn) increaseBtn.disabled = expired;
+    if (!!increaseBtn) increaseBtn.disabled = expired;
 
     const remainingIncrements = this._durationIncrements - this._elapsedTime;
   
@@ -238,33 +243,39 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
       const buttonText = this._paused ? 'Resume' : 'Pause';
 
       const pauseBtn = this.element.querySelector(`#${this._pauseId}`);
-      if (pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;      
+      if (!!pauseBtn) pauseBtn.innerHTML = `<i class="fas fa-${buttonIcon}" style="margin-right: 0.2em;"></i> ${buttonText}`;      
     }
 
     if(this._paused) {
       clearInterval(this._timerInterval);
     } else {
-        this.startTimerCountdown();
+      this.startTimerCountdown();
+    }
+  }
+
+  syncTimerPause() {
+    if(this._syncFoundryPause) {
+      this.pauseTimer(game.paused);
     }
   }
 
   pauseClients() {
-      this._paused = !this._paused;
+    this._paused = !this._paused;
 
-      const pauseOptions = {
-          id: this._id,
-          pause: this._paused,
-          timerType: 'flipdown'
-      };
+    const pauseOptions = {
+      id: this._id,
+      pause: this._paused,
+      timerType: 'flipdown'
+    };
 
-      game.socket.emit('module.hourglass', { type:'pause', options: pauseOptions });
+    game.socket.emit('module.hourglass', { type:'pause', options: pauseOptions });
 
-      Hooks.call('pauseHourglass', pauseOptions);
+    Hooks.call('pauseHourglass', pauseOptions);
   }
 
   restartTimer() {
-    if(game.user.isGM) {
-        hideFormElements(false, [this._pauseId]);
+    if(game.user.isGM && !this._syncFoundryPause) {
+      hideFormElements(false, [this._pauseId]);
     }
     
     clearInterval(this._timerInterval);
@@ -281,20 +292,20 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   restartClients() {
-      const restartOptions = {
-          id: this._id,
-          timerType: 'flipdown'
-      };
+    const restartOptions = {
+      id: this._id,
+      timerType: 'flipdown'
+    };
 
-      game.socket.emit('module.hourglass', { type:'restart', options: restartOptions });
+    game.socket.emit('module.hourglass', { type:'restart', options: restartOptions });
 
-      Hooks.call('restartHourglass', restartOptions);
+    Hooks.call('restartHourglass', restartOptions);
   }
 
   closeClients() {
     const closeOptions = {
-        id: this._id,
-        timerType: 'flipdown'
+      id: this._id,
+      timerType: 'flipdown'
     };
 
     game.socket.emit('module.hourglass', { type:'close', options: closeOptions });
@@ -404,6 +415,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
 
   closeTimer() {
     clearInterval(this._timerInterval);
+    FlipDown.timers = FlipDown.timers.filter(x => x.id !== this._id);
     super.close(this);
   }
 }

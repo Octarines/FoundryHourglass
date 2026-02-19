@@ -105,3 +105,17 @@ Hooks.on("closeHourglass", async (options) => {
       Hourglass.timers.find(x => x.id === options.id)?.timer?.closeTimer();
   }
 })
+
+Hooks.on("pauseGame", async () => {
+  Hourglass.timers.forEach(entry => {
+    if(!!entry?.id && entry.id.length > 0) {
+      entry?.timer?.syncTimerPause();
+    }
+  });
+
+  FlipDown.timers.forEach(entry => {
+    if(!!entry?.id && entry.id.length > 0) {
+      entry?.timer?.syncTimerPause();
+    }
+  });
+});
