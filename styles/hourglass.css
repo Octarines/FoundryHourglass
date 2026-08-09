@@ -18,6 +18,7 @@
 .hourglass .hourglass-canvas{
   --sand-color: #EDD0AA;
   --sand-duration: 0;
+  --animation-delay: 0s;
   --translate-top-sand: none;
   --translate-bottom-sand: 100%;
   --scale: 1;
@@ -116,6 +117,7 @@
   bottom: 0;
   background: var(--sand-color);
   animation: var(--sand-duration) lowerTopSand linear;
+  animation-delay: var(--animation-delay);
   animation-fill-mode: forwards;
   animation-play-state: var(--animationPlayState);
 
@@ -152,6 +154,7 @@
   bottom: 0;
   background: var(--sand-color);
   animation: var(--sand-duration) raiseBottomSand linear;
+  animation-delay: var(--animation-delay);
   animation-fill-mode: forwards;
   animation-play-state: var(--animationPlayState);
 
@@ -182,6 +185,7 @@
   border-top: 10px solid var(--sand-color);
   
   animation: fadeDrip var(--sand-duration) linear;
+  animation-delay: var(--animation-delay);
   animation-fill-mode: forwards;
   animation-play-state: var(--animationPlayState);
 }

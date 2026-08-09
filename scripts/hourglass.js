@@ -38,7 +38,7 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
         this._syncFoundryPause = options.syncWithFoundryPause;
         this._textScale = 1;
 
-        this._paused = this._syncFoundryPause ? game.paused : false;
+        this._paused = options.paused ?? (this._syncFoundryPause ? game.paused : false);
 
         this._timerInterval;
 
@@ -82,7 +82,11 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
 
         this._durationType = options.durationType;
         this._durationIncrements = options.durationIncrements;
-        this._duration = options.durationSeconds + (options.durationMinutes * 60);
+        this._initialDuration = Number(options.durationSeconds) + (Number(options.durationMinutes) * 60);
+        this._duration = Number.isFinite(Number(options.remainingSeconds)) ? Number(options.remainingSeconds) : this._initialDuration;
+        this._animationElapsedSeconds = Math.max(0, this._initialDuration - this._duration);
+        this._restoredManualElapsed = Number(options.elapsedManual ?? 0);
+        this._restoredExpired = !!options._restoredExpired;
 
         this.closeApplication;
     }
@@ -161,6 +165,11 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             canvasElement.style.setProperty('--sand-color', this._sandColour);
             canvasElement.style.setProperty('--scale', this._scale);
             canvasElement.style.setProperty('--styleUrl', `url(../images/${this._style}.png)`);
+
+            const animationDuration = this._initialDuration > 0 ? this._initialDuration : this._duration;
+            const animationDelay = this._animationElapsedSeconds > 0 ? `-${this._animationElapsedSeconds}s` : "0s";
+            canvasElement.style.setProperty('--sand-duration', animationDuration + "s");
+            canvasElement.style.setProperty('--animation-delay', animationDelay);
         }
 
         this._elapsedTime = 0;
@@ -179,6 +188,11 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
 
             if(this._syncFoundryPause) {
                 hideFormElements(true, [this._pauseId]);
+            }
+
+            if (this._restoredExpired) {
+                this.applyExpiredState(false);
+                return;
             }
 
             this.pauseTimer(this._paused);
@@ -200,7 +214,11 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             if(this._timeAsText) {
                 const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
                 if (!!remainingTimeElement) remainingTimeElement.innerText = this._durationIncrements;
-            }            
+            }
+
+            if (this._restoredManualElapsed > 0) {
+                this.updateIncrement(this._restoredManualElapsed);
+            }
         }
     }
 
@@ -302,6 +320,16 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
         
         clearInterval(this._timerInterval);
 
+        this._duration = this._initialDuration;
+        this._animationElapsedSeconds = 0;
+
+        const canvasElement = this.element.querySelector(`#${this._canvasId}`);
+        if (canvasElement) {
+            // Ensure CSS animation timing is restored to the original configured duration.
+            canvasElement.style.setProperty('--sand-duration', this._duration + "s");
+            canvasElement.style.setProperty('--animation-delay', "0s");
+        }
+
         this._elapsedTime = 0;
 
         if(this._timeAsText) {
@@ -363,22 +391,38 @@ export class Hourglass extends HandlebarsApplicationMixin(ApplicationV2) {
             }
 
             if(expired) {
-                clearInterval(this._timerInterval);
-
-                const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
-                if(!!this._endMessage && !!remainingTimeElement) {
-                    remainingTimeElement.innerText = this._endMessage;                    
-                }
-
-                playEndSound(this._endSound, this._endSoundPath, true);
-
-                hideFormElements(true, [this._pauseId]);
-
-                if(this._closeAtEnd) {
-                    this.closeTimer();
-                }
+                this.applyExpiredState(true);
             }
         }, 1000);
+    }
+
+    applyExpiredState(playSound) {
+        clearInterval(this._timerInterval);
+        this._paused = false;
+
+        const canvasElement = this.element.querySelector(`#${this._canvasId}`);
+        if (canvasElement) {
+            canvasElement.style.setProperty('--animationPlayState', 'paused');
+        }
+
+        const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+        if(!!remainingTimeElement) {
+            if(this._timeAsText) {
+                remainingTimeElement.innerText = this._endMessage?.length ? this._endMessage : this.formatTimeForDisplay(0);
+            } else {
+                remainingTimeElement.innerText = "";
+            }
+        }
+
+        hideFormElements(true, [this._pauseId]);
+
+        if (playSound) {
+            playEndSound(this._endSound, this._endSoundPath, true);
+        }
+
+        if(this._closeAtEnd) {
+            this.closeTimer();
+        }
     }
 
     displayRemainingTime() {

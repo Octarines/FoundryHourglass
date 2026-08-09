@@ -33,8 +33,11 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
     this._syncFoundryPause = options.syncWithFoundryPause;
 
     this._durationType = options.durationType;
-    this._duration = options.durationSeconds + (options.durationMinutes * 60);
+    this._initialDuration = Number(options.durationSeconds) + (Number(options.durationMinutes) * 60);
+    this._duration = Number.isFinite(Number(options.remainingSeconds)) ? Number(options.remainingSeconds) : this._initialDuration;
     this._durationIncrements = options.durationIncrements;
+    this._restoredManualElapsed = Number(options.elapsedManual ?? 0);
+    this._restoredExpired = !!options._restoredExpired;
     this._timerInterval;
     
     this.rotors = [];
@@ -48,7 +51,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
 
     this._textScale = 1;
 
-    this._paused = this._syncFoundryPause ? game.paused : false;
+    this._paused = options.paused ?? (this._syncFoundryPause ? game.paused : false);
 
     switch(options.size) {
       case "tiny":
@@ -186,6 +189,13 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
         hideFormElements(true, [this._pauseId]);
       }
 
+      if (this._restoredExpired) {
+        this.updateClockValues(0, false);
+        this.updateClockValues(0, true);
+        this.applyExpiredState(false);
+        return;
+      }
+
       this.updateClockValues(this._duration, false);
       this.updateClockValues(this._duration, true);
       this.pauseTimer(this._paused);
@@ -202,7 +212,31 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
           if (!!increaseBtn) increaseBtn.onclick = () => { this.incrementClients(1); };
       } else {
           hideFormElements(true, [this._durationIncrementDecrease, this._durationIncrementIncrease]);
-      }          
+      }
+
+      if (this._restoredManualElapsed > 0) {
+        this.updateIncrement(this._restoredManualElapsed);
+      }
+    }
+  }
+
+  applyExpiredState(playSound) {
+    clearInterval(this._timerInterval);
+    this._paused = false;
+
+    const remainingTimeElement = this.element.querySelector(`#${this._remainingTimeId}`);
+    if(!!remainingTimeElement) {
+      remainingTimeElement.innerText = this._endMessage?.length ? this._endMessage : "";
+    }
+
+    hideFormElements(true, [this._pauseId]);
+
+    if (playSound) {
+      playEndSound(this._endSound, this._endSoundPath, true);
+    }
+
+    if(this._closeAtEnd) {
+      this.closeTimer();
     }
   }
 
@@ -280,6 +314,7 @@ export class FlipDown extends HandlebarsApplicationMixin(ApplicationV2) {
     
     clearInterval(this._timerInterval);
 
+    this._duration = this._initialDuration;
     this._elapsedTime = 0;
 
     this.updateClockValues(this._duration, false);

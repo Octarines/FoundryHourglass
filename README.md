@@ -1,6 +1,6 @@
 # Foundry Hourglass
 
-![Latest Release Download Count](https://img.shields.io/badge/dynamic/json?label=Downloads%20(Latest)&query=assets%5B0%5D.download_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2FOctarines%2FFoundryHourglass%2Freleases%2Flatest)
+![Latest Release Download Count](https://img.shields.io/github/downloads/octarines/foundryhourglass/latest/total?label=Downloads%20(Latest))
 ![Latest Release Download Count](https://img.shields.io/github/downloads/octarines/foundryhourglass/total?color=purple&label=Downloads%20%28Total%29)
 ![Hourglass Latest Version](https://img.shields.io/github/v/release/octarines/foundryhourglass?color=yellow&label=Latest%20Version)
 ![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fhourglass&colorB=4aa94a)
@@ -136,10 +136,21 @@ By checking the "Sync wiht Foundry pause" option in the timer options, the Pause
 
 ![Hourglass Timer Resume][14]
 
+## Timer Persistance
+Starting with version 2.1.0 of Hourglass, the timers will now presist to the FoundryVTT game state. 
+
+This means that:
+
++ Timers will persist through browser refresh for both players and GM.
++ Timers will persist when the GM closes the game. This means active timers will still be available when you resume play in a later session.
++ Timers will be loaded (and therefore visible) for players who were not in game when the timer was started.
+
 ## Closing the Timer
 Closing a timer window as a user with GM role will also close that timer for all other players. 
 
-Pressing the "close" button as a non-GM user will still only close the window for yourself.
+Pressing the "close" button as a non-GM user will still only close the window for yourself. 
+
+*NB, Should a player accidentally close the timer window, simply refreshing the page will re-load any active timers.*
 
 ## Macro Support
 From version 1.9 the ability to show and start Hourglass timer windows from macros has been introduced. 
