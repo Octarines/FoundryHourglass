@@ -122,6 +122,7 @@
   animation-play-state: var(--animationPlayState);
 
   transform: translateY(var(--translate-top-sand));
+  transition: transform 0.3s linear;
 }
 
 @keyframes lowerTopSand {
@@ -159,6 +160,7 @@
   animation-play-state: var(--animationPlayState);
 
   transform: translateY(var(--translate-bottom-sand));
+  transition: transform 0.3s linear;
 }
 
 @keyframes raiseBottomSand {
